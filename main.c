@@ -1,4 +1,33 @@
 #include "raylib.h"
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAP_FILE_PATH "mappe/mappe.json"
+#define MAX_MAP_NAME 64
+#define MAX_QUAD_ID 64
+#define MAX_MAP_QUADS 128
+
+typedef struct MapQuad {
+  char id[MAX_QUAD_ID];
+  Vector2 points[4];
+  bool collidable;
+} MapQuad;
+
+typedef struct ArenaMap {
+  char name[MAX_MAP_NAME];
+  int width;
+  int height;
+  MapQuad quads[MAX_MAP_QUADS];
+  int quadCount;
+  bool loaded;
+} ArenaMap;
+
+typedef struct JsonReader {
+  const char *at;
+  char error[256];
+} JsonReader;
 
 enum screen {
   MENU,
@@ -6,6 +35,511 @@ enum screen {
 };
 
 enum screen screen = MENU;
+static ArenaMap loadedMap = {0};
+static char mapLoadError[512] = "";
+
+static bool jsonfail(JsonReader *reader, const char *message) {
+  if (reader->error[0] == '\0') {
+    snprintf(reader->error, sizeof(reader->error), "%s", message);
+  }
+
+  return false;
+}
+
+static void jsonskipws(JsonReader *reader) {
+  while (*reader->at != '\0' && isspace((unsigned char)*reader->at)) {
+    reader->at++;
+  }
+}
+
+static bool jsonconsume(JsonReader *reader, char expected) {
+  jsonskipws(reader);
+
+  if (*reader->at != expected) {
+    return false;
+  }
+
+  reader->at++;
+  return true;
+}
+
+static bool jsonexpect(JsonReader *reader, char expected) {
+  if (jsonconsume(reader, expected)) {
+    return true;
+  }
+
+  char message[64];
+  snprintf(message, sizeof(message), "Expected '%c'", expected);
+  return jsonfail(reader, message);
+}
+
+static bool jsonliteral(JsonReader *reader, const char *literal) {
+  jsonskipws(reader);
+  int length = (int)strlen(literal);
+
+  if (strncmp(reader->at, literal, length) != 0) {
+    return false;
+  }
+
+  reader->at += length;
+  return true;
+}
+
+static bool jsonstring(JsonReader *reader, char *out, int outSize) {
+  jsonskipws(reader);
+
+  if (*reader->at != '"') {
+    return jsonfail(reader, "Expected string");
+  }
+
+  reader->at++;
+  int length = 0;
+
+  while (*reader->at != '\0' && *reader->at != '"') {
+    char value = *reader->at++;
+
+    if (value == '\\') {
+      char escape = *reader->at++;
+
+      switch (escape) {
+      case '"':
+      case '\\':
+      case '/':
+        value = escape;
+        break;
+      case 'b':
+        value = '\b';
+        break;
+      case 'f':
+        value = '\f';
+        break;
+      case 'n':
+        value = '\n';
+        break;
+      case 'r':
+        value = '\r';
+        break;
+      case 't':
+        value = '\t';
+        break;
+      case 'u':
+        for (int i = 0; i < 4; i++) {
+          if (reader->at[i] == '\0' ||
+              !isxdigit((unsigned char)reader->at[i])) {
+            return jsonfail(reader, "Invalid unicode escape");
+          }
+        }
+        reader->at += 4;
+        value = '?';
+        break;
+      default:
+        return jsonfail(reader, "Invalid string escape");
+      }
+    }
+
+    if (length < outSize - 1) {
+      out[length++] = value;
+    }
+  }
+
+  if (*reader->at != '"') {
+    return jsonfail(reader, "Unterminated string");
+  }
+
+  reader->at++;
+  out[length] = '\0';
+  return true;
+}
+
+static bool jsonnumber(JsonReader *reader, float *out) {
+  jsonskipws(reader);
+
+  if (*reader->at != '-' && !isdigit((unsigned char)*reader->at)) {
+    return jsonfail(reader, "Expected number");
+  }
+
+  char *end = NULL;
+  float value = strtof(reader->at, &end);
+
+  if (end == reader->at) {
+    return jsonfail(reader, "Invalid number");
+  }
+
+  reader->at = end;
+  *out = value;
+  return true;
+}
+
+static bool jsonbool(JsonReader *reader, bool *out) {
+  if (jsonliteral(reader, "true")) {
+    *out = true;
+    return true;
+  }
+
+  if (jsonliteral(reader, "false")) {
+    *out = false;
+    return true;
+  }
+
+  return jsonfail(reader, "Expected boolean");
+}
+
+static bool jsonskipvalue(JsonReader *reader);
+
+static bool jsonskipobject(JsonReader *reader) {
+  if (!jsonexpect(reader, '{')) {
+    return false;
+  }
+
+  if (jsonconsume(reader, '}')) {
+    return true;
+  }
+
+  while (true) {
+    char key[64];
+
+    if (!jsonstring(reader, key, sizeof(key)) || !jsonexpect(reader, ':') ||
+        !jsonskipvalue(reader)) {
+      return false;
+    }
+
+    if (jsonconsume(reader, '}')) {
+      return true;
+    }
+
+    if (!jsonexpect(reader, ',')) {
+      return false;
+    }
+  }
+}
+
+static bool jsonskiparray(JsonReader *reader) {
+  if (!jsonexpect(reader, '[')) {
+    return false;
+  }
+
+  if (jsonconsume(reader, ']')) {
+    return true;
+  }
+
+  while (true) {
+    if (!jsonskipvalue(reader)) {
+      return false;
+    }
+
+    if (jsonconsume(reader, ']')) {
+      return true;
+    }
+
+    if (!jsonexpect(reader, ',')) {
+      return false;
+    }
+  }
+}
+
+static bool jsonskipvalue(JsonReader *reader) {
+  jsonskipws(reader);
+
+  switch (*reader->at) {
+  case '{':
+    return jsonskipobject(reader);
+  case '[':
+    return jsonskiparray(reader);
+  case '"': {
+    char ignored[64];
+    return jsonstring(reader, ignored, sizeof(ignored));
+  }
+  case 't':
+  case 'f': {
+    bool ignored = false;
+    return jsonbool(reader, &ignored);
+  }
+  case 'n':
+    if (jsonliteral(reader, "null")) {
+      return true;
+    }
+    break;
+  default: {
+    float ignored = 0.0f;
+    return jsonnumber(reader, &ignored);
+  }
+  }
+
+  return jsonfail(reader, "Expected value");
+}
+
+static bool parsepoint(JsonReader *reader, Vector2 *point) {
+  float x = 0.0f;
+  float y = 0.0f;
+
+  if (!jsonexpect(reader, '[') || !jsonnumber(reader, &x) ||
+      !jsonexpect(reader, ',') || !jsonnumber(reader, &y) ||
+      !jsonexpect(reader, ']')) {
+    return false;
+  }
+
+  point->x = x;
+  point->y = y;
+  return true;
+}
+
+static bool parsequadpoints(JsonReader *reader, Vector2 points[4]) {
+  if (!jsonexpect(reader, '[')) {
+    return false;
+  }
+
+  for (int i = 0; i < 4; i++) {
+    if (i > 0 && !jsonexpect(reader, ',')) {
+      return false;
+    }
+
+    if (!parsepoint(reader, &points[i])) {
+      return false;
+    }
+  }
+
+  return jsonexpect(reader, ']');
+}
+
+static bool parsequad(JsonReader *reader, MapQuad *quad) {
+  memset(quad, 0, sizeof(*quad));
+  bool hasPoints = false;
+
+  if (!jsonexpect(reader, '{')) {
+    return false;
+  }
+
+  if (jsonconsume(reader, '}')) {
+    return jsonfail(reader, "Quad needs points");
+  }
+
+  while (true) {
+    char key[64];
+
+    if (!jsonstring(reader, key, sizeof(key)) || !jsonexpect(reader, ':')) {
+      return false;
+    }
+
+    if (strcmp(key, "id") == 0) {
+      if (!jsonstring(reader, quad->id, sizeof(quad->id))) {
+        return false;
+      }
+    } else if (strcmp(key, "collidable") == 0) {
+      if (!jsonbool(reader, &quad->collidable)) {
+        return false;
+      }
+    } else if (strcmp(key, "points") == 0) {
+      if (!parsequadpoints(reader, quad->points)) {
+        return false;
+      }
+      hasPoints = true;
+    } else if (!jsonskipvalue(reader)) {
+      return false;
+    }
+
+    if (jsonconsume(reader, '}')) {
+      break;
+    }
+
+    if (!jsonexpect(reader, ',')) {
+      return false;
+    }
+  }
+
+  if (!hasPoints) {
+    return jsonfail(reader, "Quad needs points");
+  }
+
+  return true;
+}
+
+static bool parsequads(JsonReader *reader, ArenaMap *map) {
+  if (!jsonexpect(reader, '[')) {
+    return false;
+  }
+
+  if (jsonconsume(reader, ']')) {
+    return true;
+  }
+
+  while (true) {
+    if (map->quadCount < MAX_MAP_QUADS) {
+      if (!parsequad(reader, &map->quads[map->quadCount])) {
+        return false;
+      }
+      map->quadCount++;
+    } else if (!jsonskipvalue(reader)) {
+      return false;
+    }
+
+    if (jsonconsume(reader, ']')) {
+      return true;
+    }
+
+    if (!jsonexpect(reader, ',')) {
+      return false;
+    }
+  }
+}
+
+static bool parsemap(JsonReader *reader, ArenaMap *map) {
+  memset(map, 0, sizeof(*map));
+  snprintf(map->name, sizeof(map->name), "untitled");
+  map->width = 800;
+  map->height = 450;
+
+  if (!jsonexpect(reader, '{')) {
+    return false;
+  }
+
+  if (jsonconsume(reader, '}')) {
+    map->loaded = true;
+    return true;
+  }
+
+  while (true) {
+    char key[64];
+
+    if (!jsonstring(reader, key, sizeof(key)) || !jsonexpect(reader, ':')) {
+      return false;
+    }
+
+    if (strcmp(key, "name") == 0) {
+      if (!jsonstring(reader, map->name, sizeof(map->name))) {
+        return false;
+      }
+    } else if (strcmp(key, "width") == 0) {
+      float width = 0.0f;
+      if (!jsonnumber(reader, &width)) {
+        return false;
+      }
+      map->width = (int)width;
+    } else if (strcmp(key, "height") == 0) {
+      float height = 0.0f;
+      if (!jsonnumber(reader, &height)) {
+        return false;
+      }
+      map->height = (int)height;
+    } else if (strcmp(key, "quads") == 0) {
+      if (!parsequads(reader, map)) {
+        return false;
+      }
+    } else if (!jsonskipvalue(reader)) {
+      return false;
+    }
+
+    if (jsonconsume(reader, '}')) {
+      break;
+    }
+
+    if (!jsonexpect(reader, ',')) {
+      return false;
+    }
+  }
+
+  if (map->width <= 0 || map->height <= 0) {
+    return jsonfail(reader, "Map width and height must be positive");
+  }
+
+  map->loaded = true;
+  return true;
+}
+
+static bool parsemapsarray(JsonReader *reader, ArenaMap *map) {
+  if (!jsonexpect(reader, '[')) {
+    return false;
+  }
+
+  if (jsonconsume(reader, ']')) {
+    return jsonfail(reader, "Maps array is empty");
+  }
+
+  if (!parsemap(reader, map)) {
+    return false;
+  }
+
+  while (true) {
+    if (jsonconsume(reader, ']')) {
+      return true;
+    }
+
+    if (!jsonexpect(reader, ',') || !jsonskipvalue(reader)) {
+      return false;
+    }
+  }
+}
+
+static bool parsemapfile(JsonReader *reader, ArenaMap *map) {
+  bool foundMaps = false;
+
+  if (!jsonexpect(reader, '{')) {
+    return false;
+  }
+
+  if (jsonconsume(reader, '}')) {
+    return jsonfail(reader, "Map file needs a maps array");
+  }
+
+  while (true) {
+    char key[64];
+
+    if (!jsonstring(reader, key, sizeof(key)) || !jsonexpect(reader, ':')) {
+      return false;
+    }
+
+    if (strcmp(key, "maps") == 0) {
+      if (!parsemapsarray(reader, map)) {
+        return false;
+      }
+      foundMaps = true;
+    } else if (!jsonskipvalue(reader)) {
+      return false;
+    }
+
+    if (jsonconsume(reader, '}')) {
+      break;
+    }
+
+    if (!jsonexpect(reader, ',')) {
+      return false;
+    }
+  }
+
+  if (!foundMaps) {
+    return jsonfail(reader, "Map file needs a maps array");
+  }
+
+  return true;
+}
+
+static bool loadfirstmap(const char *fileName, ArenaMap *map) {
+  char *text = LoadFileText(fileName);
+
+  if (text == NULL) {
+    snprintf(mapLoadError, sizeof(mapLoadError), "Could not load %.450s",
+             fileName);
+    return false;
+  }
+
+  JsonReader reader = {.at = text, .error = ""};
+  bool ok = parsemapfile(&reader, map);
+
+  if (ok) {
+    jsonskipws(&reader);
+
+    if (*reader.at != '\0') {
+      ok = jsonfail(&reader, "Unexpected data after JSON root");
+    }
+  }
+
+  if (!ok) {
+    snprintf(mapLoadError, sizeof(mapLoadError), "%.180s: %.300s", fileName,
+             reader.error[0] != '\0' ? reader.error : "Invalid map JSON");
+  }
+
+  UnloadFileText(text);
+  return ok;
+}
 
 void drawmenu(const char *title, int currentWidth, int currentHeight) {
   Rectangle menuWindow = {currentWidth / 2.0f - 180,
@@ -31,16 +565,60 @@ void drawmenu(const char *title, int currentWidth, int currentHeight) {
            currentHeight / 2 + 42, 28, BLACK);
 }
 
-void drawgame(void) {
-  ClearBackground(GREEN);
+static Vector2 maptoscreen(Vector2 point, const ArenaMap *map, int screenWidth,
+                           int screenHeight) {
+  float scaleX = (float)screenWidth / (float)map->width;
+  float scaleY = (float)screenHeight / (float)map->height;
+  float scale = scaleX < scaleY ? scaleX : scaleY;
+  float offsetX = ((float)screenWidth - (float)map->width * scale) * 0.5f;
+  float offsetY = ((float)screenHeight - (float)map->height * scale) * 0.5f;
+
+  return (Vector2){offsetX + point.x * scale, offsetY + point.y * scale};
+}
+
+static void drawquad(const MapQuad *quad, const ArenaMap *map, int screenWidth,
+                     int screenHeight) {
+  Vector2 p0 = maptoscreen(quad->points[0], map, screenWidth, screenHeight);
+  Vector2 p1 = maptoscreen(quad->points[1], map, screenWidth, screenHeight);
+  Vector2 p2 = maptoscreen(quad->points[2], map, screenWidth, screenHeight);
+  Vector2 p3 = maptoscreen(quad->points[3], map, screenWidth, screenHeight);
+  Color fill = quad->collidable ? (Color){62, 140, 222, 230}
+                                : (Color){190, 190, 190, 90};
+  Color outline = quad->collidable ? (Color){20, 65, 130, 255}
+                                   : (Color){105, 105, 105, 180};
+
+  DrawTriangle(p0, p1, p2, fill);
+  DrawTriangle(p0, p2, p3, fill);
+  DrawLineEx(p0, p1, 3.0f, outline);
+  DrawLineEx(p1, p2, 3.0f, outline);
+  DrawLineEx(p2, p3, 3.0f, outline);
+  DrawLineEx(p3, p0, 3.0f, outline);
+}
+
+void drawgame(int currentWidth, int currentHeight) {
+  ClearBackground((Color){28, 34, 42, 255});
+
+  if (!loadedMap.loaded) {
+    DrawText(mapLoadError[0] != '\0' ? mapLoadError : "No map loaded", 30, 30,
+             22, RED);
+    return;
+  }
+
+  for (int i = 0; i < loadedMap.quadCount; i++) {
+    drawquad(&loadedMap.quads[i], &loadedMap, currentWidth, currentHeight);
+  }
+
+  DrawText(loadedMap.name, 24, 24, 24, RAYWHITE);
 }
 
 int main(void) {
   const int screenWidth = 800;
   const int screenHeight = 450;
-  const char *title = "GAME";
+  const char *title = "BRAWLHALLA";
 
   InitWindow(screenWidth, screenHeight, title);
+
+  loadfirstmap(MAP_FILE_PATH, &loadedMap);
 
   int monitor = GetCurrentMonitor();
   SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
@@ -60,7 +638,7 @@ int main(void) {
       break;
 
     case GAME:
-      drawgame();
+      drawgame(currentWidth, currentHeight);
       break;
     }
 

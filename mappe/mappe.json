@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "maps": [
+    {
+      "name": "training_quad_test",
+      "width": 1600,
+      "height": 900,
+      "quads": [
+        {
+          "id": "main_floor",
+          "collidable": true,
+          "points": [[300, 700], [1300, 700], [1300, 760], [300, 760]]
+        },
+        {
+          "id": "left_block",
+          "collidable": true,
+          "points": [[220, 520], [360, 520], [360, 760], [220, 760]]
+        },
+        {
+          "id": "right_block",
+          "collidable": true,
+          "points": [[1240, 520], [1380, 520], [1380, 760], [1240, 760]]
+        },
+        {
+          "id": "top_visual_quad",
+          "collidable": false,
+          "points": [[650, 230], [950, 230], [950, 290], [650, 290]]
+        },
+        {
+          "id": "center_visual_quad",
+          "collidable": false,
+          "points": [[675, 500], [925, 500], [925, 540], [675, 540]]
+        }
+      ]
+    },
+    {
+      "name": "unused_second_map",
+      "width": 1600,
+      "height": 900,
+      "quads": [
+        {
+          "id": "unused_floor",
+          "collidable": true,
+          "points": [[400, 700], [1200, 700], [1200, 760], [400, 760]]
+        }
+      ]
+    }
+  ]
+}
