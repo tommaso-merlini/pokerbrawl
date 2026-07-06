@@ -10,6 +10,11 @@
 #define MAX_MAP_QUADS 128
 #define MAX_MAP_SPAWNPOINTS 16
 #define SPAWNPOINT_SIZE 24.0f
+#define PLAYER_WIDTH 36.0f
+#define PLAYER_HEIGHT 54.0f
+#define PLAYER_SPEED 320.0f
+#define PLAYER_JUMP_SPEED 700.0f
+#define PLAYER_GRAVITY 1800.0f
 
 typedef struct MapQuad {
   char id[MAX_QUAD_ID];
@@ -28,6 +33,14 @@ typedef struct ArenaMap {
   bool loaded;
 } ArenaMap;
 
+typedef struct Player {
+  Vector2 position;
+  Vector2 velocity;
+  Vector2 size;
+  bool onGround;
+  bool spawned;
+} Player;
+
 typedef struct JsonReader {
   const char *at;
   char error[256];
@@ -40,6 +53,7 @@ enum screen {
 
 enum screen screen = MENU;
 static ArenaMap loadedMap = {0};
+static Player player = {0};
 static char mapLoadError[512] = "";
 
 static bool jsonfail(JsonReader *reader, const char *message) {
@@ -578,6 +592,132 @@ static bool loadfirstmap(const char *fileName, ArenaMap *map) {
   return ok;
 }
 
+static Rectangle rectfromcenter(Vector2 center, Vector2 size) {
+  return (Rectangle){center.x - size.x * 0.5f, center.y - size.y * 0.5f,
+                     size.x, size.y};
+}
+
+static Rectangle quadbounds(const MapQuad *quad) {
+  float minX = quad->points[0].x;
+  float maxX = quad->points[0].x;
+  float minY = quad->points[0].y;
+  float maxY = quad->points[0].y;
+
+  for (int i = 1; i < 4; i++) {
+    if (quad->points[i].x < minX) {
+      minX = quad->points[i].x;
+    }
+    if (quad->points[i].x > maxX) {
+      maxX = quad->points[i].x;
+    }
+    if (quad->points[i].y < minY) {
+      minY = quad->points[i].y;
+    }
+    if (quad->points[i].y > maxY) {
+      maxY = quad->points[i].y;
+    }
+  }
+
+  return (Rectangle){minX, minY, maxX - minX, maxY - minY};
+}
+
+static void resetplayer(Player *player, const ArenaMap *map) {
+  Vector2 spawnpoint = {(float)map->width * 0.5f, (float)map->height * 0.5f};
+
+  if (map->spawnpointCount > 0) {
+    spawnpoint = map->spawnpoints[0];
+  }
+
+  player->position = spawnpoint;
+  player->velocity = (Vector2){0.0f, 0.0f};
+  player->size = (Vector2){PLAYER_WIDTH, PLAYER_HEIGHT};
+  player->onGround = false;
+  player->spawned = true;
+}
+
+static void resolveplayerhorizontal(Player *player, const ArenaMap *map) {
+  Rectangle playerRect = rectfromcenter(player->position, player->size);
+
+  for (int i = 0; i < map->quadCount; i++) {
+    if (!map->quads[i].collidable) {
+      continue;
+    }
+
+    Rectangle solid = quadbounds(&map->quads[i]);
+
+    if (!CheckCollisionRecs(playerRect, solid)) {
+      continue;
+    }
+
+    if (player->velocity.x > 0.0f) {
+      player->position.x = solid.x - player->size.x * 0.5f;
+    } else if (player->velocity.x < 0.0f) {
+      player->position.x = solid.x + solid.width + player->size.x * 0.5f;
+    }
+
+    player->velocity.x = 0.0f;
+    playerRect = rectfromcenter(player->position, player->size);
+  }
+}
+
+static void resolveplayervertical(Player *player, const ArenaMap *map) {
+  Rectangle playerRect = rectfromcenter(player->position, player->size);
+  player->onGround = false;
+
+  for (int i = 0; i < map->quadCount; i++) {
+    if (!map->quads[i].collidable) {
+      continue;
+    }
+
+    Rectangle solid = quadbounds(&map->quads[i]);
+
+    if (!CheckCollisionRecs(playerRect, solid)) {
+      continue;
+    }
+
+    if (player->velocity.y > 0.0f) {
+      player->position.y = solid.y - player->size.y * 0.5f;
+      player->onGround = true;
+    } else if (player->velocity.y < 0.0f) {
+      player->position.y = solid.y + solid.height + player->size.y * 0.5f;
+    }
+
+    player->velocity.y = 0.0f;
+    playerRect = rectfromcenter(player->position, player->size);
+  }
+}
+
+static void updateplayer(Player *player, const ArenaMap *map, float dt) {
+  if (!player->spawned) {
+    resetplayer(player, map);
+  }
+
+  float move = 0.0f;
+
+  if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) {
+    move -= 1.0f;
+  }
+  if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
+    move += 1.0f;
+  }
+
+  player->velocity.x = move * PLAYER_SPEED;
+
+  if ((IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W) ||
+       IsKeyPressed(KEY_UP)) &&
+      player->onGround) {
+    player->velocity.y = -PLAYER_JUMP_SPEED;
+    player->onGround = false;
+  }
+
+  player->position.x += player->velocity.x * dt;
+  resolveplayerhorizontal(player, map);
+
+  player->velocity.y += PLAYER_GRAVITY * dt;
+  player->position.y += player->velocity.y * dt;
+  resolveplayervertical(player, map);
+}
+
 void drawmenu(const char *title, int currentWidth, int currentHeight) {
   Rectangle menuWindow = {currentWidth / 2.0f - 180,
                           currentHeight / 2.0f - 120, 360, 240};
@@ -647,6 +787,22 @@ static void drawspawnpoint(Vector2 spawnpoint, const ArenaMap *map,
   DrawRectangleRec(square, RED);
 }
 
+static void drawplayer(const Player *player, const ArenaMap *map,
+                       int screenWidth, int screenHeight) {
+  Rectangle bounds = rectfromcenter(player->position, player->size);
+  Vector2 topLeft =
+      maptoscreen((Vector2){bounds.x, bounds.y}, map, screenWidth,
+                  screenHeight);
+  Vector2 bottomRight =
+      maptoscreen((Vector2){bounds.x + bounds.width, bounds.y + bounds.height},
+                  map, screenWidth, screenHeight);
+  Rectangle screenRect = {topLeft.x, topLeft.y, bottomRight.x - topLeft.x,
+                          bottomRight.y - topLeft.y};
+
+  DrawRectangleRec(screenRect, BLUE);
+  DrawRectangleLinesEx(screenRect, 2.0f, (Color){12, 45, 120, 255});
+}
+
 void drawgame(int currentWidth, int currentHeight) {
   ClearBackground((Color){28, 34, 42, 255});
 
@@ -665,6 +821,10 @@ void drawgame(int currentWidth, int currentHeight) {
                    currentHeight);
   }
 
+  if (player.spawned) {
+    drawplayer(&player, &loadedMap, currentWidth, currentHeight);
+  }
+
   DrawText(loadedMap.name, 24, 24, 24, RAYWHITE);
 }
 
@@ -675,7 +835,9 @@ int main(void) {
 
   InitWindow(screenWidth, screenHeight, title);
 
-  loadfirstmap(MAP_FILE_PATH, &loadedMap);
+  if (loadfirstmap(MAP_FILE_PATH, &loadedMap)) {
+    resetplayer(&player, &loadedMap);
+  }
 
   int monitor = GetCurrentMonitor();
   SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
@@ -686,6 +848,10 @@ int main(void) {
   while (!WindowShouldClose()) {
     int currentWidth = GetScreenWidth();
     int currentHeight = GetScreenHeight();
+
+    if (screen == GAME && loadedMap.loaded) {
+      updateplayer(&player, &loadedMap, GetFrameTime());
+    }
 
     BeginDrawing();
 
