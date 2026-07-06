@@ -5,6 +5,7 @@
       "name": "training_quad_test",
       "width": 1600,
       "height": 900,
+      "spawnpoints": [[500, 650], [1100, 650]],
       "quads": [
         {
           "id": "main_floor",
@@ -37,6 +38,7 @@
       "name": "unused_second_map",
       "width": 1600,
       "height": 900,
+      "spawnpoints": [[600, 650], [1000, 650]],
       "quads": [
         {
           "id": "unused_floor",

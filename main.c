@@ -8,6 +8,8 @@
 #define MAX_MAP_NAME 64
 #define MAX_QUAD_ID 64
 #define MAX_MAP_QUADS 128
+#define MAX_MAP_SPAWNPOINTS 16
+#define SPAWNPOINT_SIZE 24.0f
 
 typedef struct MapQuad {
   char id[MAX_QUAD_ID];
@@ -21,6 +23,8 @@ typedef struct ArenaMap {
   int height;
   MapQuad quads[MAX_MAP_QUADS];
   int quadCount;
+  Vector2 spawnpoints[MAX_MAP_SPAWNPOINTS];
+  int spawnpointCount;
   bool loaded;
 } ArenaMap;
 
@@ -382,6 +386,35 @@ static bool parsequads(JsonReader *reader, ArenaMap *map) {
   }
 }
 
+static bool parsespawnpoints(JsonReader *reader, ArenaMap *map) {
+  if (!jsonexpect(reader, '[')) {
+    return false;
+  }
+
+  if (jsonconsume(reader, ']')) {
+    return true;
+  }
+
+  while (true) {
+    if (map->spawnpointCount < MAX_MAP_SPAWNPOINTS) {
+      if (!parsepoint(reader, &map->spawnpoints[map->spawnpointCount])) {
+        return false;
+      }
+      map->spawnpointCount++;
+    } else if (!jsonskipvalue(reader)) {
+      return false;
+    }
+
+    if (jsonconsume(reader, ']')) {
+      return true;
+    }
+
+    if (!jsonexpect(reader, ',')) {
+      return false;
+    }
+  }
+}
+
 static bool parsemap(JsonReader *reader, ArenaMap *map) {
   memset(map, 0, sizeof(*map));
   snprintf(map->name, sizeof(map->name), "untitled");
@@ -422,6 +455,10 @@ static bool parsemap(JsonReader *reader, ArenaMap *map) {
       map->height = (int)height;
     } else if (strcmp(key, "quads") == 0) {
       if (!parsequads(reader, map)) {
+        return false;
+      }
+    } else if (strcmp(key, "spawnpoints") == 0) {
+      if (!parsespawnpoints(reader, map)) {
         return false;
       }
     } else if (!jsonskipvalue(reader)) {
@@ -595,6 +632,21 @@ static void drawquad(const MapQuad *quad, const ArenaMap *map, int screenWidth,
   DrawLineEx(p3, p0, 3.0f, outline);
 }
 
+static void drawspawnpoint(Vector2 spawnpoint, const ArenaMap *map,
+                           int screenWidth, int screenHeight) {
+  const float halfSize = SPAWNPOINT_SIZE * 0.5f;
+  Vector2 topLeft = maptoscreen(
+      (Vector2){spawnpoint.x - halfSize, spawnpoint.y - halfSize}, map,
+      screenWidth, screenHeight);
+  Vector2 bottomRight = maptoscreen(
+      (Vector2){spawnpoint.x + halfSize, spawnpoint.y + halfSize}, map,
+      screenWidth, screenHeight);
+  Rectangle square = {topLeft.x, topLeft.y, bottomRight.x - topLeft.x,
+                      bottomRight.y - topLeft.y};
+
+  DrawRectangleRec(square, RED);
+}
+
 void drawgame(int currentWidth, int currentHeight) {
   ClearBackground((Color){28, 34, 42, 255});
 
@@ -606,6 +658,11 @@ void drawgame(int currentWidth, int currentHeight) {
 
   for (int i = 0; i < loadedMap.quadCount; i++) {
     drawquad(&loadedMap.quads[i], &loadedMap, currentWidth, currentHeight);
+  }
+
+  for (int i = 0; i < loadedMap.spawnpointCount; i++) {
+    drawspawnpoint(loadedMap.spawnpoints[i], &loadedMap, currentWidth,
+                   currentHeight);
   }
 
   DrawText(loadedMap.name, 24, 24, 24, RAYWHITE);
