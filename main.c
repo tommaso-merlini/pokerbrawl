@@ -21,6 +21,7 @@ int main(void) {
     int currentWidth = GetScreenWidth();
     int currentHeight = GetScreenHeight();
 
+    //update
     switch (gGame.screen) {
     case SCREEN_MENU:
       menuScreenUpdate();
@@ -33,6 +34,7 @@ int main(void) {
 
     BeginDrawing();
 
+    //draw
     switch (gGame.screen) {
     case SCREEN_MENU:
       menuScreenDraw(currentWidth, currentHeight);

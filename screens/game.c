@@ -8,6 +8,31 @@
 #define PLAYER_JUMP_SPEED 700.0f
 #define PLAYER_GRAVITY 1800.0f
 
+typedef struct PlayerControls {
+  int leftKey;
+  int rightKey;
+  int jumpKey;
+} PlayerControls;
+
+typedef struct PlayerColors {
+  Color fill;
+  Color outline;
+} PlayerColors;
+
+static const PlayerControls PLAYER_CONTROLS[MAX_PLAYERS] = {
+    {KEY_A, KEY_D, KEY_W},
+    {KEY_LEFT, KEY_RIGHT, KEY_UP},
+    {KEY_J, KEY_L, KEY_I},
+    {KEY_F, KEY_H, KEY_T},
+};
+
+static const PlayerColors PLAYER_COLORS[MAX_PLAYERS] = {
+    {{35, 115, 230, 255}, {12, 45, 120, 255}},
+    {{238, 118, 52, 255}, {128, 50, 18, 255}},
+    {{45, 165, 95, 255}, {18, 86, 48, 255}},
+    {{150, 95, 220, 255}, {75, 40, 135, 255}},
+};
+
 static Rectangle rectfromcenter(Vector2 center, Vector2 size) {
   return (Rectangle){center.x - size.x * 0.5f, center.y - size.y * 0.5f,
                      size.x, size.y};
@@ -89,21 +114,20 @@ static void resolveplayervertical(Player *player, const ArenaMap *map) {
   }
 }
 
-static void updateplayer(Player *player, const ArenaMap *map, float dt) {
+static void updateplayer(Player *player, const ArenaMap *map,
+                         const PlayerControls *controls, float dt) {
   float move = 0.0f;
 
-  if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) {
+  if (IsKeyDown(controls->leftKey)) {
     move -= 1.0f;
   }
-  if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
+  if (IsKeyDown(controls->rightKey)) {
     move += 1.0f;
   }
 
   player->velocity.x = move * PLAYER_SPEED;
 
-  if ((IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_W) ||
-       IsKeyPressed(KEY_UP)) &&
-      player->onGround) {
+  if (IsKeyPressed(controls->jumpKey) && player->onGround) {
     player->velocity.y = -PLAYER_JUMP_SPEED;
     player->onGround = false;
   }
@@ -162,7 +186,8 @@ static void drawspawnpoint(Vector2 spawnpoint, const ArenaMap *map,
 }
 
 static void drawplayer(const Player *player, const ArenaMap *map,
-                       int screenWidth, int screenHeight) {
+                       const PlayerColors *colors, int screenWidth,
+                       int screenHeight) {
   Rectangle bounds = rectfromcenter(player->position, player->size);
   Vector2 topLeft =
       maptoscreen((Vector2){bounds.x, bounds.y}, map, screenWidth,
@@ -173,8 +198,8 @@ static void drawplayer(const Player *player, const ArenaMap *map,
   Rectangle screenRect = {topLeft.x, topLeft.y, bottomRight.x - topLeft.x,
                           bottomRight.y - topLeft.y};
 
-  DrawRectangleRec(screenRect, BLUE);
-  DrawRectangleLinesEx(screenRect, 2.0f, (Color){12, 45, 120, 255});
+  DrawRectangleRec(screenRect, colors->fill);
+  DrawRectangleLinesEx(screenRect, 2.0f, colors->outline);
 }
 
 void gameScreenUpdate(void) {
@@ -182,7 +207,14 @@ void gameScreenUpdate(void) {
     return;
   }
 
-  updateplayer(&gGame.player, &gGame.currentMap, GetFrameTime());
+  float dt = GetFrameTime();
+
+  for (int i = 0; i < gGame.playerCount && i < MAX_PLAYERS; i++) {
+    if (gGame.players[i].spawned) {
+      updateplayer(&gGame.players[i], &gGame.currentMap, &PLAYER_CONTROLS[i],
+                   dt);
+    }
+  }
 }
 
 void gameScreenDraw(int currentWidth, int currentHeight) {
@@ -205,8 +237,11 @@ void gameScreenDraw(int currentWidth, int currentHeight) {
                    currentWidth, currentHeight);
   }
 
-  if (gGame.player.spawned) {
-    drawplayer(&gGame.player, &gGame.currentMap, currentWidth, currentHeight);
+  for (int i = 0; i < gGame.playerCount && i < MAX_PLAYERS; i++) {
+    if (gGame.players[i].spawned) {
+      drawplayer(&gGame.players[i], &gGame.currentMap, &PLAYER_COLORS[i],
+                 currentWidth, currentHeight);
+    }
   }
 
   DrawText(gGame.currentMap.name, 24, 24, 24, RAYWHITE);

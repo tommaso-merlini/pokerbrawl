@@ -5,6 +5,9 @@
 
 #include "map.h"
 
+#define MAX_PLAYERS 4
+#define DEFAULT_PLAYER_COUNT 2
+
 typedef enum GameScreen {
   SCREEN_MENU,
   SCREEN_GAME
@@ -23,7 +26,8 @@ typedef struct GameState {
   MapList availableMaps;
   int selectedMapIndex;
   ArenaMap currentMap;
-  Player player;
+  Player players[MAX_PLAYERS];
+  int playerCount;
   char mapLoadError[512];
 } GameState;
 

@@ -11,18 +11,38 @@
 
 GameState gGame = {0};
 
-static void resetplayer(const ArenaMap *map) {
-  Vector2 spawnpoint = {(float)map->width * 0.5f, (float)map->height * 0.5f};
+static Vector2 fallbackspawnpoint(const ArenaMap *map, int playerIndex,
+                                  int playerCount) {
+  float centerX = (float)map->width * 0.5f;
+  float centerY = (float)map->height * 0.5f;
+  float offset = ((float)playerIndex - ((float)playerCount - 1.0f) * 0.5f) *
+                 PLAYER_WIDTH * 1.5f;
 
-  if (map->spawnpointCount > 0) {
-    spawnpoint = map->spawnpoints[0];
+  return (Vector2){centerX + offset, centerY};
+}
+
+static void resetplayers(const ArenaMap *map) {
+  gGame.playerCount = DEFAULT_PLAYER_COUNT;
+
+  if (gGame.playerCount > MAX_PLAYERS) {
+    gGame.playerCount = MAX_PLAYERS;
   }
 
-  gGame.player.position = spawnpoint;
-  gGame.player.velocity = (Vector2){0.0f, 0.0f};
-  gGame.player.size = (Vector2){PLAYER_WIDTH, PLAYER_HEIGHT};
-  gGame.player.onGround = false;
-  gGame.player.spawned = true;
+  for (int i = 0; i < MAX_PLAYERS; i++) {
+    gGame.players[i] = (Player){0};
+  }
+
+  for (int i = 0; i < gGame.playerCount; i++) {
+    Vector2 spawnpoint = i < map->spawnpointCount
+                             ? map->spawnpoints[i]
+                             : fallbackspawnpoint(map, i, gGame.playerCount);
+
+    gGame.players[i].position = spawnpoint;
+    gGame.players[i].velocity = (Vector2){0.0f, 0.0f};
+    gGame.players[i].size = (Vector2){PLAYER_WIDTH, PLAYER_HEIGHT};
+    gGame.players[i].onGround = false;
+    gGame.players[i].spawned = true;
+  }
 }
 
 void initGameState(void) {
@@ -66,7 +86,7 @@ bool startGameWithMap(int index) {
 
   gGame.selectedMapIndex = index;
   gGame.currentMap = gGame.availableMaps.maps[index];
-  resetplayer(&gGame.currentMap);
+  resetplayers(&gGame.currentMap);
   gGame.screen = SCREEN_GAME;
   return true;
 }

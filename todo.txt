@@ -1,4 +1,4 @@
 TODO
 
 [x] in menu game disegnare una lista di bottoni (nomi delle mappe) dove per iniziare il gioco devi cliccare un bottone
-[ ] il player non e' unico, ci deve essere un array di player. da capire come aggiornare i comandi
+[x] il player non e' unico, ci deve essere un array di player. da capire come aggiornare i comandi
