@@ -1,32 +1,37 @@
 [
   {
     "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c main.c -o main.o",
-    "file": "/home/tommaso/Documents/test-gioco/main.c"
+    "command": "cc -Iraylib/src -c src/main.c -o src/main.o",
+    "file": "/home/tommaso/Documents/test-gioco/src/main.c"
   },
   {
     "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c game_state.c -o game_state.o",
-    "file": "/home/tommaso/Documents/test-gioco/game_state.c"
+    "command": "cc -Iraylib/src -c src/game_state.c -o src/game_state.o",
+    "file": "/home/tommaso/Documents/test-gioco/src/game_state.c"
   },
   {
     "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c screens/menu.c -o screens/menu.o",
-    "file": "/home/tommaso/Documents/test-gioco/screens/menu.c"
+    "command": "cc -Iraylib/src -c src/player.c -o src/player.o",
+    "file": "/home/tommaso/Documents/test-gioco/src/player.c"
   },
   {
     "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c screens/game.c -o screens/game.o",
-    "file": "/home/tommaso/Documents/test-gioco/screens/game.c"
+    "command": "cc -Iraylib/src -c src/screens/menu.c -o src/screens/menu.o",
+    "file": "/home/tommaso/Documents/test-gioco/src/screens/menu.c"
   },
   {
     "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c json_reader.c -o json_reader.o",
-    "file": "/home/tommaso/Documents/test-gioco/json_reader.c"
+    "command": "cc -Iraylib/src -c src/screens/game.c -o src/screens/game.o",
+    "file": "/home/tommaso/Documents/test-gioco/src/screens/game.c"
   },
   {
     "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c map_loader.c -o map_loader.o",
-    "file": "/home/tommaso/Documents/test-gioco/map_loader.c"
+    "command": "cc -Iraylib/src -c src/json_reader.c -o src/json_reader.o",
+    "file": "/home/tommaso/Documents/test-gioco/src/json_reader.c"
+  },
+  {
+    "directory": "/home/tommaso/Documents/test-gioco",
+    "command": "cc -Iraylib/src -c src/map_loader.c -o src/map_loader.o",
+    "file": "/home/tommaso/Documents/test-gioco/src/map_loader.c"
   }
 ]
