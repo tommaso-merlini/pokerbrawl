@@ -6,7 +6,7 @@
 int main(void) {
   const int screenWidth = 800;
   const int screenHeight = 450;
-  const char *title = "BRAWLHALLA";
+  const char *title = "PokerBrawl";
 
   InitWindow(screenWidth, screenHeight, title);
   initGameState();
