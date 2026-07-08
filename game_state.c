@@ -10,6 +10,36 @@
 
 GameState gGame = {0};
 
+static const char *DEFAULT_CHARACTER_NAMES[] = {
+    "Giordi", "Cianki", "Tommi", "Pippo", "Alessio",
+};
+
+static int modeplayercount(GameMode mode) {
+  switch (mode) {
+  case GAME_MODE_1V1:
+    return 2;
+  }
+
+  return DEFAULT_PLAYER_COUNT;
+}
+
+static void initcharacters(void) {
+  int defaultCharacterCount =
+      (int)(sizeof(DEFAULT_CHARACTER_NAMES) /
+            sizeof(DEFAULT_CHARACTER_NAMES[0]));
+
+  gGame.characterCount = defaultCharacterCount;
+  if (gGame.characterCount > MAX_CHARACTERS) {
+    gGame.characterCount = MAX_CHARACTERS;
+  }
+
+  for (int i = 0; i < gGame.characterCount; i++) {
+    snprintf(gGame.availableCharacters[i].name,
+             sizeof(gGame.availableCharacters[i].name), "%s",
+             DEFAULT_CHARACTER_NAMES[i]);
+  }
+}
+
 static Vector2 fallbackspawnpoint(const ArenaMap *map, int playerIndex,
                                   int playerCount) {
   float centerX = (float)map->width * 0.5f;
@@ -21,7 +51,7 @@ static Vector2 fallbackspawnpoint(const ArenaMap *map, int playerIndex,
 }
 
 static void resetplayers(const ArenaMap *map) {
-  gGame.playerCount = DEFAULT_PLAYER_COUNT;
+  gGame.playerCount = modeplayercount(gGame.selectedMode);
 
   if (gGame.playerCount > MAX_PLAYERS) {
     gGame.playerCount = MAX_PLAYERS;
@@ -43,8 +73,15 @@ static void resetplayers(const ArenaMap *map) {
 void initGameState(void) {
   gGame = (GameState){0};
   gGame.screen = SCREEN_MENU;
+  gGame.selectedMode = GAME_MODE_1V1;
   gGame.selectedMapIndex = -1;
+  gGame.playerCount = modeplayercount(gGame.selectedMode);
   gGame.mapLoadError[0] = '\0';
+  initcharacters();
+
+  for (int i = 0; i < MAX_PLAYERS; i++) {
+    gGame.playerSetups[i].selectedCharacterIndex = 0;
+  }
 
   char *mapText = LoadFileText(MAP_FILE_PATH);
 
@@ -60,6 +97,7 @@ void initGameState(void) {
   if (parsemaplistjson(mapText, &maps, parseError, sizeof(parseError))) {
     if (maps.count > 0) {
       gGame.availableMaps = maps;
+      gGame.selectedMapIndex = 0;
       gGame.mapLoadError[0] = '\0';
     } else {
       snprintf(gGame.mapLoadError, sizeof(gGame.mapLoadError),

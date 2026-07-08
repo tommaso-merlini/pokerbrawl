@@ -3,6 +3,8 @@
 #include "../game_state.h"
 #include "raylib.h"
 
+#include <stdio.h>
+
 #define SPAWNPOINT_SIZE 24.0f
 
 typedef struct PlayerControls {
@@ -47,6 +49,19 @@ static PlayerInput getplayerinput(const PlayerControls *controls) {
   input.jumpPressed = IsKeyPressed(controls->jumpKey);
 
   return input;
+}
+
+static const char *getplayercharactername(int playerIndex) {
+  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS) {
+    return "Unknown";
+  }
+
+  int characterIndex = gGame.playerSetups[playerIndex].selectedCharacterIndex;
+  if (characterIndex < 0 || characterIndex >= gGame.characterCount) {
+    return "Unknown";
+  }
+
+  return gGame.availableCharacters[characterIndex].name;
 }
 
 static Vector2 maptoscreen(Vector2 point, const ArenaMap *map, int screenWidth,
@@ -156,4 +171,11 @@ void gameScreenDraw(int currentWidth, int currentHeight) {
   }
 
   DrawText(gGame.currentMap.name, 24, 24, 24, RAYWHITE);
+
+  for (int i = 0; i < gGame.playerCount && i < MAX_PLAYERS; i++) {
+    char playerLabel[128];
+    snprintf(playerLabel, sizeof(playerLabel), "Player %d: %s", i + 1,
+             getplayercharactername(i));
+    DrawText(playerLabel, 24, 58 + i * 24, 20, RAYWHITE);
+  }
 }
