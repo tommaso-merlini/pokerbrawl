@@ -6,8 +6,7 @@
 #include <stdio.h>
 
 #define MAP_FILE_PATH "mappe/mappe.json"
-#define PLAYER_WIDTH 36.0f
-#define PLAYER_HEIGHT 54.0f
+#define FALLBACK_SPAWN_SPACING 54.0f
 
 GameState gGame = {0};
 
@@ -16,7 +15,7 @@ static Vector2 fallbackspawnpoint(const ArenaMap *map, int playerIndex,
   float centerX = (float)map->width * 0.5f;
   float centerY = (float)map->height * 0.5f;
   float offset = ((float)playerIndex - ((float)playerCount - 1.0f) * 0.5f) *
-                 PLAYER_WIDTH * 1.5f;
+                 FALLBACK_SPAWN_SPACING;
 
   return (Vector2){centerX + offset, centerY};
 }
@@ -37,11 +36,7 @@ static void resetplayers(const ArenaMap *map) {
                              ? map->spawnpoints[i]
                              : fallbackspawnpoint(map, i, gGame.playerCount);
 
-    gGame.players[i].position = spawnpoint;
-    gGame.players[i].velocity = (Vector2){0.0f, 0.0f};
-    gGame.players[i].size = (Vector2){PLAYER_WIDTH, PLAYER_HEIGHT};
-    gGame.players[i].onGround = false;
-    gGame.players[i].spawned = true;
+    initPlayer(&gGame.players[i], spawnpoint);
   }
 }
 

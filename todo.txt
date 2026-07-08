@@ -4,3 +4,5 @@ TODO
 [x] il player non e' unico, ci deve essere un array di player. da capire come aggiornare i comandi
 [ ] aggiunta sprites
 [ ] aggiunta di hits
+[ ] le collisioni dovrebbero essere gestite al di fuori del player. magari il player chiede se puo' andare in quel punto senza collisioni (lo chiede a collision.c magari) e in base alla mappa si risponde con si o no
+

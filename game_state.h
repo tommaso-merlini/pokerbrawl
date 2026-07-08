@@ -4,22 +4,12 @@
 #include <stdbool.h>
 
 #include "map.h"
-
-#define MAX_PLAYERS 4
-#define DEFAULT_PLAYER_COUNT 2
+#include "player.h"
 
 typedef enum GameScreen {
   SCREEN_MENU,
   SCREEN_GAME
 } GameScreen;
-
-typedef struct Player {
-  Vector2 position;
-  Vector2 velocity;
-  Vector2 size;
-  bool onGround;
-  bool spawned;
-} Player;
 
 typedef struct GameState {
   GameScreen screen;

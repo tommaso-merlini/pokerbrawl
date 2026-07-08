@@ -1,0 +1,32 @@
+[
+  {
+    "directory": "/home/tommaso/Documents/test-gioco",
+    "command": "cc -Iraylib/src -c main.c -o main.o",
+    "file": "/home/tommaso/Documents/test-gioco/main.c"
+  },
+  {
+    "directory": "/home/tommaso/Documents/test-gioco",
+    "command": "cc -Iraylib/src -c game_state.c -o game_state.o",
+    "file": "/home/tommaso/Documents/test-gioco/game_state.c"
+  },
+  {
+    "directory": "/home/tommaso/Documents/test-gioco",
+    "command": "cc -Iraylib/src -c screens/menu.c -o screens/menu.o",
+    "file": "/home/tommaso/Documents/test-gioco/screens/menu.c"
+  },
+  {
+    "directory": "/home/tommaso/Documents/test-gioco",
+    "command": "cc -Iraylib/src -c screens/game.c -o screens/game.o",
+    "file": "/home/tommaso/Documents/test-gioco/screens/game.c"
+  },
+  {
+    "directory": "/home/tommaso/Documents/test-gioco",
+    "command": "cc -Iraylib/src -c json_reader.c -o json_reader.o",
+    "file": "/home/tommaso/Documents/test-gioco/json_reader.c"
+  },
+  {
+    "directory": "/home/tommaso/Documents/test-gioco",
+    "command": "cc -Iraylib/src -c map_loader.c -o map_loader.o",
+    "file": "/home/tommaso/Documents/test-gioco/map_loader.c"
+  }
+]
