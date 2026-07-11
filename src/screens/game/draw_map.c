@@ -1,5 +1,7 @@
 #include "draw_internal.h"
 
+#include <string.h>
+
 #define SPAWNPOINT_SIZE 24.0f
 
 Vector2 mapToScreen(Vector2 point, const ArenaMap *map, int width, int height) {
@@ -41,7 +43,32 @@ static void drawSpawnPoint(Vector2 spawn, const ArenaMap *map, int width,
   DrawRectangleRec(bounds, GREEN);
 }
 
-void drawArena(const ArenaMap *map, int width, int height) {
+static bool drawMapBackground(const ArenaMap *map, const MapRenderer *renderer,
+                              int width, int height) {
+  if (map->background[0] == '\0' ||
+      strcmp(renderer->backgroundPath, map->background) != 0 ||
+      !IsTextureValid(renderer->background)) {
+    return false;
+  }
+
+  Vector2 topLeft = mapToScreen((Vector2){0.0f, 0.0f}, map, width, height);
+  Vector2 bottomRight = mapToScreen(
+      (Vector2){(float)map->width, (float)map->height}, map, width, height);
+  Rectangle source = {0.0f, 0.0f, (float)renderer->background.width,
+                      (float)renderer->background.height};
+  Rectangle destination = {topLeft.x, topLeft.y, bottomRight.x - topLeft.x,
+                           bottomRight.y - topLeft.y};
+  DrawTexturePro(renderer->background, source, destination, (Vector2){0}, 0.0f,
+                 WHITE);
+  return true;
+}
+
+void drawArena(const ArenaMap *map, const MapRenderer *renderer, int width,
+               int height) {
+  if (drawMapBackground(map, renderer, width, height)) {
+    return;
+  }
+
   for (int i = 0; i < map->quadCount; i++) {
     drawQuad(&map->quads[i], map, width, height);
   }

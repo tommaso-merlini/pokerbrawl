@@ -25,6 +25,10 @@ static bool parseMap(JsonReader *reader, ArenaMap *map) {
       if (!jsonString(reader, map->name, sizeof(map->name))) {
         return false;
       }
+    } else if (strcmp(key, "background") == 0) {
+      if (!jsonString(reader, map->background, sizeof(map->background))) {
+        return false;
+      }
     } else if (strcmp(key, "width") == 0 || strcmp(key, "height") == 0) {
       float value = 0.0f;
       if (!jsonNumber(reader, &value)) {

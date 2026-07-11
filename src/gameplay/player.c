@@ -2,16 +2,14 @@
 
 #include "collision.h"
 
-#define PLAYER_WIDTH 36.0f
-#define PLAYER_HEIGHT 54.0f
-#define PLAYER_SPEED 320.0f
+#define PLAYER_SPEED 400.0f
 #define PLAYER_JUMP_SPEED 700.0f
 #define PLAYER_GRAVITY 1800.0f
 
 void initPlayer(Player *player, Vector2 spawnpoint, Character character) {
   *player = (Player){
       .position = spawnpoint,
-      .size = {PLAYER_WIDTH, PLAYER_HEIGHT},
+      .size = {PLAYER_COLLIDER_WIDTH, PLAYER_COLLIDER_HEIGHT},
       .character = character,
       .spawned = true,
   };

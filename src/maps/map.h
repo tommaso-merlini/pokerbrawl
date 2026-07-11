@@ -5,6 +5,7 @@
 
 #define MAX_MAPS 16
 #define MAX_MAP_NAME 64
+#define MAX_MAP_BACKGROUND 256
 #define MAX_QUAD_ID 64
 #define MAX_MAP_QUADS 128
 #define MAX_MAP_SPAWNPOINTS 16
@@ -17,6 +18,7 @@ typedef struct MapQuad {
 
 typedef struct ArenaMap {
   char name[MAX_MAP_NAME];
+  char background[MAX_MAP_BACKGROUND];
   int width;
   int height;
   MapQuad quads[MAX_MAP_QUADS];

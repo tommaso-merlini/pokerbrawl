@@ -1,20 +1,15 @@
 #include "draw_internal.h"
 
-#define PLAYER_SPRITE_HEIGHT 88.0f
-
 static void drawMissingSprite(const Player *player, const ArenaMap *map,
                               int width, int height) {
   Vector2 half = {player->size.x * 0.5f, player->size.y * 0.5f};
-  Vector2 topLeft =
-      mapToScreen((Vector2){player->position.x - half.x,
-                            player->position.y - half.y},
-                  map, width, height);
-  Vector2 bottomRight =
-      mapToScreen((Vector2){player->position.x + half.x,
-                            player->position.y + half.y},
-                  map, width, height);
-  DrawRectangleRec((Rectangle){topLeft.x, topLeft.y,
-                               bottomRight.x - topLeft.x,
+  Vector2 topLeft = mapToScreen(
+      (Vector2){player->position.x - half.x, player->position.y - half.y}, map,
+      width, height);
+  Vector2 bottomRight = mapToScreen(
+      (Vector2){player->position.x + half.x, player->position.y + half.y}, map,
+      width, height);
+  DrawRectangleRec((Rectangle){topLeft.x, topLeft.y, bottomRight.x - topLeft.x,
                                bottomRight.y - topLeft.y},
                    MAGENTA);
 }
@@ -37,14 +32,14 @@ static void drawPlayer(const Player *player, const ArenaMap *map,
     source.width = -source.width;
   }
 
+  float spriteHeight = player->size.y * PLAYER_VISUAL_HEIGHT_SCALE;
   float spriteWidth =
-      PLAYER_SPRITE_HEIGHT * ((float)texture->width / (float)texture->height);
+      spriteHeight * ((float)texture->width / (float)texture->height);
   Vector2 feet = {player->position.x,
                   player->position.y + player->size.y * 0.5f};
   Vector2 screenFeet = mapToScreen(feet, map, width, height);
   Vector2 screenTopLeft =
-      mapToScreen((Vector2){feet.x - spriteWidth * 0.5f,
-                            feet.y - PLAYER_SPRITE_HEIGHT},
+      mapToScreen((Vector2){feet.x - spriteWidth * 0.5f, feet.y - spriteHeight},
                   map, width, height);
   Rectangle destination = {
       screenFeet.x,

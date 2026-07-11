@@ -13,5 +13,5 @@ the same width and height. Use a transparent RGBA canvas, keep the character's
 feet on the same baseline in every pose, and draw the character facing right.
 The renderer flips the image when the player faces left.
 
-The current files are runtime copies from the CC0 Kenney Platformer Characters
-pack retained under `assets/vendor/kenney-platformer-characters`.
+All character directories use custom generated pixel art based on the
+project-provided character references.

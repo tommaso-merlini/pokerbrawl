@@ -14,6 +14,8 @@ int main(void) {
   if (!initPlayerRenderer(&playerRenderer)) {
     TraceLog(LOG_ERROR, "%s", playerRenderer.loadError);
   }
+  MapRenderer mapRenderer;
+  initMapRenderer(&mapRenderer);
 
   int monitor = GetCurrentMonitor();
   SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
@@ -26,12 +28,15 @@ int main(void) {
     float dt = GetFrameTime();
     updateGame(&game, &input, dt);
     updatePlayerRenderer(&playerRenderer, &game, dt);
+    updateMapRenderer(&mapRenderer, &game.currentMap);
 
     BeginDrawing();
-    drawGame(&game, &playerRenderer, GetScreenWidth(), GetScreenHeight());
+    drawGame(&game, &playerRenderer, &mapRenderer, GetScreenWidth(),
+             GetScreenHeight());
     EndDrawing();
   }
 
+  unloadMapRenderer(&mapRenderer);
   unloadPlayerRenderer(&playerRenderer);
   CloseWindow();
 
