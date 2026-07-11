@@ -1,37 +1,66 @@
 #include "draw_internal.h"
 
-typedef struct PlayerColors {
-  Color fill;
-  Color outline;
-} PlayerColors;
+#define PLAYER_SPRITE_HEIGHT 88.0f
 
-static const PlayerColors PLAYER_COLORS[MAX_PLAYERS] = {
-    {{35, 115, 230, 255}, {12, 45, 120, 255}},
-    {{238, 118, 52, 255}, {128, 50, 18, 255}},
-    {{45, 165, 95, 255}, {18, 86, 48, 255}},
-    {{150, 95, 220, 255}, {75, 40, 135, 255}},
-};
-
-static void drawPlayer(const Player *player, const ArenaMap *map,
-                       PlayerColors colors, int width, int height) {
+static void drawMissingSprite(const Player *player, const ArenaMap *map,
+                              int width, int height) {
   Vector2 half = {player->size.x * 0.5f, player->size.y * 0.5f};
-  Vector2 topLeft = mapToScreen(
-      (Vector2){player->position.x - half.x, player->position.y - half.y}, map,
-      width, height);
-  Vector2 bottomRight = mapToScreen(
-      (Vector2){player->position.x + half.x, player->position.y + half.y}, map,
-      width, height);
-  Rectangle bounds = {topLeft.x, topLeft.y, bottomRight.x - topLeft.x,
-                      bottomRight.y - topLeft.y};
-  DrawRectangleRec(bounds, colors.fill);
-  DrawRectangleLinesEx(bounds, 2.0f, colors.outline);
+  Vector2 topLeft =
+      mapToScreen((Vector2){player->position.x - half.x,
+                            player->position.y - half.y},
+                  map, width, height);
+  Vector2 bottomRight =
+      mapToScreen((Vector2){player->position.x + half.x,
+                            player->position.y + half.y},
+                  map, width, height);
+  DrawRectangleRec((Rectangle){topLeft.x, topLeft.y,
+                               bottomRight.x - topLeft.x,
+                               bottomRight.y - topLeft.y},
+                   MAGENTA);
 }
 
-void drawPlayers(const GameState *game, int width, int height) {
+static void drawPlayer(const Player *player, const ArenaMap *map,
+                       const PlayerRenderer *renderer,
+                       const PlayerSpriteState *state, int width, int height) {
+  const Texture2D *sheet =
+      getPlayerSpriteSheet(&renderer->assets, player->character.id);
+  if (sheet == NULL) {
+    drawMissingSprite(player, map, width, height);
+    return;
+  }
+
+  const PlayerSpriteClip *clip = getPlayerSpriteClip(state->animation);
+  Rectangle source = getPlayerSpriteFrame(clip->frameIndices[state->frame]);
+  if (state->facingLeft) {
+    source.width = -source.width;
+  }
+
+  float spriteWidth = PLAYER_SPRITE_HEIGHT *
+                      ((float)PLAYER_SPRITE_FRAME_WIDTH /
+                       (float)PLAYER_SPRITE_FRAME_HEIGHT);
+  Vector2 feet = {player->position.x,
+                  player->position.y + player->size.y * 0.5f};
+  Vector2 screenFeet = mapToScreen(feet, map, width, height);
+  Vector2 screenTopLeft =
+      mapToScreen((Vector2){feet.x - spriteWidth * 0.5f,
+                            feet.y - PLAYER_SPRITE_HEIGHT},
+                  map, width, height);
+  Rectangle destination = {
+      screenFeet.x,
+      screenFeet.y,
+      (screenFeet.x - screenTopLeft.x) * 2.0f,
+      screenFeet.y - screenTopLeft.y,
+  };
+  Vector2 origin = {destination.width * 0.5f, destination.height};
+  DrawTexturePro(*sheet, source, destination, origin, 0.0f, WHITE);
+}
+
+void drawPlayers(const GameState *game, const PlayerRenderer *renderer,
+                 int width, int height) {
   for (int i = 0; i < game->playerCount && i < MAX_PLAYERS; i++) {
     if (game->players[i].spawned) {
-      drawPlayer(&game->players[i], &game->currentMap, PLAYER_COLORS[i], width,
-                 height);
+      drawPlayer(&game->players[i], &game->currentMap, renderer,
+                 &renderer->players[i], width, height);
     }
   }
 }

@@ -16,13 +16,14 @@ void updateGame(GameState *game, const InputState *input, float dt) {
   }
 }
 
-void drawGame(const GameState *game, int screenWidth, int screenHeight) {
+void drawGame(const GameState *game, const PlayerRenderer *renderer,
+              int screenWidth, int screenHeight) {
   switch (game->screen) {
   case SCREEN_MENU:
     menuScreenDraw(game, screenWidth, screenHeight);
     break;
   case SCREEN_GAME:
-    gameScreenDraw(game, screenWidth, screenHeight);
+    gameScreenDraw(game, renderer, screenWidth, screenHeight);
     break;
   }
 }

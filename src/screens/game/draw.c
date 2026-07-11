@@ -2,7 +2,8 @@
 
 #include <stdio.h>
 
-void gameScreenDraw(const GameState *game, int screenWidth, int screenHeight) {
+void gameScreenDraw(const GameState *game, const PlayerRenderer *renderer,
+                    int screenWidth, int screenHeight) {
   ClearBackground(DARKBROWN);
 
   if (!game->currentMap.loaded) {
@@ -13,7 +14,7 @@ void gameScreenDraw(const GameState *game, int screenWidth, int screenHeight) {
   }
 
   drawArena(&game->currentMap, screenWidth, screenHeight);
-  drawPlayers(game, screenWidth, screenHeight);
+  drawPlayers(game, renderer, screenWidth, screenHeight);
   drawGameLabels(game);
 }
 

@@ -1,10 +1,13 @@
 #include "game_state_internal.h"
 
-#include <stdio.h>
 #include <string.h>
 
-static const char *CHARACTER_NAMES[] = {
-    "Giordi", "Cianki", "Tommi", "Pippo", "Alessio",
+static const Character CHARACTER_DEFINITIONS[] = {
+    {.id = CHARACTER_GIORDI, .name = "Giordi"},
+    {.id = CHARACTER_CIANKI, .name = "Cianki"},
+    {.id = CHARACTER_TOMMI, .name = "Tommi"},
+    {.id = CHARACTER_PIPPO, .name = "Pippo"},
+    {.id = CHARACTER_ALESSIO, .name = "Alessio"},
 };
 
 static int findCharacterIndex(const GameState *game, const char *name) {
@@ -21,12 +24,12 @@ static int findCharacterIndex(const GameState *game, const char *name) {
 }
 
 void initAvailableCharacters(GameState *game) {
-  int count = (int)(sizeof(CHARACTER_NAMES) / sizeof(CHARACTER_NAMES[0]));
+  int count = (int)(sizeof(CHARACTER_DEFINITIONS) /
+                    sizeof(CHARACTER_DEFINITIONS[0]));
 
   for (int i = 0; i < count && i < MAX_CHARACTERS; i++) {
-    Character *character = &game->availableCharacters[game->characterCount++];
-    snprintf(character->name, sizeof(character->name), "%s",
-             CHARACTER_NAMES[i]);
+    game->availableCharacters[game->characterCount++] =
+        CHARACTER_DEFINITIONS[i];
   }
 }
 

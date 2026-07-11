@@ -10,6 +10,10 @@ int main(void) {
   InitWindow(screenWidth, screenHeight, title);
   GameState game;
   initGameState(&game);
+  PlayerRenderer playerRenderer;
+  if (!initPlayerRenderer(&playerRenderer)) {
+    TraceLog(LOG_ERROR, "%s", playerRenderer.loadError);
+  }
 
   int monitor = GetCurrentMonitor();
   SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
@@ -19,13 +23,16 @@ int main(void) {
 
   while (!WindowShouldClose()) {
     InputState input = readInput();
-    updateGame(&game, &input, GetFrameTime());
+    float dt = GetFrameTime();
+    updateGame(&game, &input, dt);
+    updatePlayerRenderer(&playerRenderer, &game, dt);
 
     BeginDrawing();
-    drawGame(&game, GetScreenWidth(), GetScreenHeight());
+    drawGame(&game, &playerRenderer, GetScreenWidth(), GetScreenHeight());
     EndDrawing();
   }
 
+  unloadPlayerRenderer(&playerRenderer);
   CloseWindow();
 
   return 0;
