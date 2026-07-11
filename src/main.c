@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include "game_state.h"
 #include "screens/game.h"
-#include "screens/menu.h"
+#include "screens/menu/menu.h"
 
 int main(void) {
   const int screenWidth = 800;
