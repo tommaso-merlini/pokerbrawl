@@ -22,22 +22,23 @@ static void drawMissingSprite(const Player *player, const ArenaMap *map,
 static void drawPlayer(const Player *player, const ArenaMap *map,
                        const PlayerRenderer *renderer,
                        const PlayerSpriteState *state, int width, int height) {
-  const Texture2D *sheet =
-      getPlayerSpriteSheet(&renderer->assets, player->character.id);
-  if (sheet == NULL) {
+  const PlayerSpriteClip *clip = getPlayerSpriteClip(state->animation);
+  PlayerSpritePose pose = clip->poses[state->frame];
+  const Texture2D *texture =
+      getPlayerSpritePose(&renderer->assets, player->character.id, pose);
+  if (texture == NULL) {
     drawMissingSprite(player, map, width, height);
     return;
   }
 
-  const PlayerSpriteClip *clip = getPlayerSpriteClip(state->animation);
-  Rectangle source = getPlayerSpriteFrame(clip->frameIndices[state->frame]);
+  Rectangle source = {0.0f, 0.0f, (float)texture->width,
+                      (float)texture->height};
   if (state->facingLeft) {
     source.width = -source.width;
   }
 
-  float spriteWidth = PLAYER_SPRITE_HEIGHT *
-                      ((float)PLAYER_SPRITE_FRAME_WIDTH /
-                       (float)PLAYER_SPRITE_FRAME_HEIGHT);
+  float spriteWidth =
+      PLAYER_SPRITE_HEIGHT * ((float)texture->width / (float)texture->height);
   Vector2 feet = {player->position.x,
                   player->position.y + player->size.y * 0.5f};
   Vector2 screenFeet = mapToScreen(feet, map, width, height);
@@ -52,7 +53,7 @@ static void drawPlayer(const Player *player, const ArenaMap *map,
       screenFeet.y - screenTopLeft.y,
   };
   Vector2 origin = {destination.width * 0.5f, destination.height};
-  DrawTexturePro(*sheet, source, destination, origin, 0.0f, WHITE);
+  DrawTexturePro(*texture, source, destination, origin, 0.0f, WHITE);
 }
 
 void drawPlayers(const GameState *game, const PlayerRenderer *renderer,

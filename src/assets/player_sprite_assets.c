@@ -2,41 +2,72 @@
 
 #include <stdio.h>
 
-#define PLAYER_SPRITE_ROOT                                                   \
-  "assets/vendor/kenney-platformer-characters/PNG"
-
-static const char *PLAYER_SPRITE_PATHS[CHARACTER_ID_COUNT] = {
-    [CHARACTER_GIORDI] = PLAYER_SPRITE_ROOT "/Player/player_tilesheet.png",
-    [CHARACTER_CIANKI] = PLAYER_SPRITE_ROOT "/Female/female_tilesheet.png",
-    [CHARACTER_TOMMI] =
-        PLAYER_SPRITE_ROOT "/Adventurer/adventurer_tilesheet.png",
-    [CHARACTER_PIPPO] = PLAYER_SPRITE_ROOT "/Soldier/soldier_tilesheet.png",
-    [CHARACTER_ALESSIO] = PLAYER_SPRITE_ROOT "/Zombie/zombie_tilesheet.png",
+static const char *CHARACTER_DIRECTORIES[CHARACTER_ID_COUNT] = {
+    [CHARACTER_GIORDI] = "giordi",
+    [CHARACTER_CIANKI] = "cianki",
+    [CHARACTER_TOMMI] = "tommi",
+    [CHARACTER_PIPPO] = "pippo",
+    [CHARACTER_ALESSIO] = "alessio",
 };
 
-// The Kenney sheet is a 9 x 3 row-major grid. These indices were verified
-// against the separate pose PNGs shipped in the pack.
+static const char *POSE_FILENAMES[PLAYER_SPRITE_POSE_COUNT] = {
+    [PLAYER_SPRITE_POSE_IDLE] = "idle.png",
+    [PLAYER_SPRITE_POSE_WALK_1] = "walk1.png",
+    [PLAYER_SPRITE_POSE_WALK_2] = "walk2.png",
+    [PLAYER_SPRITE_POSE_JUMP] = "jump.png",
+    [PLAYER_SPRITE_POSE_FALL] = "fall.png",
+};
+
 static const PlayerSpriteClip PLAYER_SPRITE_CLIPS
     [PLAYER_SPRITE_ANIMATION_COUNT] = {
-        [PLAYER_SPRITE_IDLE] = {{0, 0}, 1, 0.0f},
-        [PLAYER_SPRITE_WALK] = {{9, 10}, 2, 0.14f},
-        [PLAYER_SPRITE_JUMP] = {{1, 0}, 1, 0.0f},
-        [PLAYER_SPRITE_FALL] = {{2, 0}, 1, 0.0f},
+        [PLAYER_SPRITE_IDLE] = {{PLAYER_SPRITE_POSE_IDLE}, 1, 0.0f},
+        [PLAYER_SPRITE_WALK] =
+            {{PLAYER_SPRITE_POSE_WALK_1, PLAYER_SPRITE_POSE_WALK_2}, 2, 0.14f},
+        [PLAYER_SPRITE_JUMP] = {{PLAYER_SPRITE_POSE_JUMP}, 1, 0.0f},
+        [PLAYER_SPRITE_FALL] = {{PLAYER_SPRITE_POSE_FALL}, 1, 0.0f},
 };
+
+static bool loadCharacterPoses(PlayerSpriteAssets *assets,
+                               CharacterId character, char *error,
+                               size_t errorSize) {
+  CharacterSpriteAssets *characterAssets = &assets->characters[character];
+
+  for (int pose = 0; pose < PLAYER_SPRITE_POSE_COUNT; pose++) {
+    char path[256];
+    snprintf(path, sizeof(path), "assets/characters/%s/%s",
+             CHARACTER_DIRECTORIES[character], POSE_FILENAMES[pose]);
+    Texture2D texture = LoadTexture(path);
+    characterAssets->poses[pose] = texture;
+
+    if (!IsTextureValid(texture)) {
+      if (error != NULL && errorSize > 0) {
+        snprintf(error, errorSize, "Could not load player pose %.390s", path);
+      }
+      return false;
+    }
+
+    if (pose == 0) {
+      characterAssets->frameWidth = texture.width;
+      characterAssets->frameHeight = texture.height;
+    } else if (texture.width != characterAssets->frameWidth ||
+               texture.height != characterAssets->frameHeight) {
+      if (error != NULL && errorSize > 0) {
+        snprintf(error, errorSize,
+                 "Player poses must share a canvas size: %.370s", path);
+      }
+      return false;
+    }
+  }
+
+  return true;
+}
 
 bool loadPlayerSpriteAssets(PlayerSpriteAssets *assets, char *error,
                             size_t errorSize) {
   *assets = (PlayerSpriteAssets){0};
 
-  for (int i = 0; i < CHARACTER_ID_COUNT; i++) {
-    assets->sheets[i] = LoadTexture(PLAYER_SPRITE_PATHS[i]);
-    if (!IsTextureValid(assets->sheets[i]) ||
-        assets->sheets[i].width != PLAYER_SPRITE_FRAME_WIDTH * 9 ||
-        assets->sheets[i].height != PLAYER_SPRITE_FRAME_HEIGHT * 3) {
-      if (error != NULL && errorSize > 0) {
-        snprintf(error, errorSize, "Invalid player spritesheet %.380s",
-                 PLAYER_SPRITE_PATHS[i]);
-      }
+  for (int character = 0; character < CHARACTER_ID_COUNT; character++) {
+    if (!loadCharacterPoses(assets, (CharacterId)character, error, errorSize)) {
       unloadPlayerSpriteAssets(assets);
       return false;
     }
@@ -47,20 +78,25 @@ bool loadPlayerSpriteAssets(PlayerSpriteAssets *assets, char *error,
 }
 
 void unloadPlayerSpriteAssets(PlayerSpriteAssets *assets) {
-  for (int i = 0; i < CHARACTER_ID_COUNT; i++) {
-    if (IsTextureValid(assets->sheets[i])) {
-      UnloadTexture(assets->sheets[i]);
+  for (int character = 0; character < CHARACTER_ID_COUNT; character++) {
+    for (int pose = 0; pose < PLAYER_SPRITE_POSE_COUNT; pose++) {
+      Texture2D texture = assets->characters[character].poses[pose];
+      if (IsTextureValid(texture)) {
+        UnloadTexture(texture);
+      }
     }
   }
   *assets = (PlayerSpriteAssets){0};
 }
 
-const Texture2D *getPlayerSpriteSheet(const PlayerSpriteAssets *assets,
-                                      CharacterId character) {
-  if (!assets->loaded || character < 0 || character >= CHARACTER_ID_COUNT) {
+const Texture2D *getPlayerSpritePose(const PlayerSpriteAssets *assets,
+                                     CharacterId character,
+                                     PlayerSpritePose pose) {
+  if (!assets->loaded || character < 0 || character >= CHARACTER_ID_COUNT ||
+      pose < 0 || pose >= PLAYER_SPRITE_POSE_COUNT) {
     return NULL;
   }
-  return &assets->sheets[character];
+  return &assets->characters[character].poses[pose];
 }
 
 const PlayerSpriteClip *getPlayerSpriteClip(PlayerSpriteAnimation animation) {
@@ -68,14 +104,4 @@ const PlayerSpriteClip *getPlayerSpriteClip(PlayerSpriteAnimation animation) {
     return &PLAYER_SPRITE_CLIPS[PLAYER_SPRITE_IDLE];
   }
   return &PLAYER_SPRITE_CLIPS[animation];
-}
-
-Rectangle getPlayerSpriteFrame(int frameIndex) {
-  const int columns = 9;
-  return (Rectangle){
-      (float)(frameIndex % columns) * PLAYER_SPRITE_FRAME_WIDTH,
-      (float)(frameIndex / columns) * PLAYER_SPRITE_FRAME_HEIGHT,
-      PLAYER_SPRITE_FRAME_WIDTH,
-      PLAYER_SPRITE_FRAME_HEIGHT,
-  };
 }

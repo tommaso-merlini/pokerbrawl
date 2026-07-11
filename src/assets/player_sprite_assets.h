@@ -7,9 +7,16 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#define PLAYER_SPRITE_FRAME_WIDTH 80
-#define PLAYER_SPRITE_FRAME_HEIGHT 110
 #define MAX_PLAYER_SPRITE_FRAMES 2
+
+typedef enum PlayerSpritePose {
+  PLAYER_SPRITE_POSE_IDLE,
+  PLAYER_SPRITE_POSE_WALK_1,
+  PLAYER_SPRITE_POSE_WALK_2,
+  PLAYER_SPRITE_POSE_JUMP,
+  PLAYER_SPRITE_POSE_FALL,
+  PLAYER_SPRITE_POSE_COUNT
+} PlayerSpritePose;
 
 typedef enum PlayerSpriteAnimation {
   PLAYER_SPRITE_IDLE,
@@ -20,22 +27,28 @@ typedef enum PlayerSpriteAnimation {
 } PlayerSpriteAnimation;
 
 typedef struct PlayerSpriteClip {
-  int frameIndices[MAX_PLAYER_SPRITE_FRAMES];
+  PlayerSpritePose poses[MAX_PLAYER_SPRITE_FRAMES];
   int frameCount;
   float frameDuration;
 } PlayerSpriteClip;
 
+typedef struct CharacterSpriteAssets {
+  Texture2D poses[PLAYER_SPRITE_POSE_COUNT];
+  int frameWidth;
+  int frameHeight;
+} CharacterSpriteAssets;
+
 typedef struct PlayerSpriteAssets {
-  Texture2D sheets[CHARACTER_ID_COUNT];
+  CharacterSpriteAssets characters[CHARACTER_ID_COUNT];
   bool loaded;
 } PlayerSpriteAssets;
 
 bool loadPlayerSpriteAssets(PlayerSpriteAssets *assets, char *error,
                             size_t errorSize);
 void unloadPlayerSpriteAssets(PlayerSpriteAssets *assets);
-const Texture2D *getPlayerSpriteSheet(const PlayerSpriteAssets *assets,
-                                      CharacterId character);
+const Texture2D *getPlayerSpritePose(const PlayerSpriteAssets *assets,
+                                     CharacterId character,
+                                     PlayerSpritePose pose);
 const PlayerSpriteClip *getPlayerSpriteClip(PlayerSpriteAnimation animation);
-Rectangle getPlayerSpriteFrame(int frameIndex);
 
 #endif

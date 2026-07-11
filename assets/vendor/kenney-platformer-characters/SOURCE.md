@@ -10,5 +10,5 @@ The original pack contains five characters with 24 poses each. This vendored
 copy keeps its PNG directory intact; vector sources and preview images not
 needed by the game were omitted.
 
-Each character tilesheet is 720 x 330 pixels and uses a 9 x 3 grid of
-80 x 110 pixel cells.
+Selected poses are copied into `assets/characters` for use at runtime. The
+vendored PNG directory is retained as the unmodified source distribution.
