@@ -4,7 +4,6 @@
 #include "raylib.h"
 
 #include <stdio.h>
-#include <string.h>
 
 #define MENU_TITLE "BRAWLHALLA"
 
@@ -23,69 +22,6 @@ typedef struct MenuLayout {
 
 static MenuStep menuStep = MENU_STEP_MODE;
 static float mapScroll = 0.0f;
-
-static int activeplayercount(void) {
-  int playerCount = gGame.playerCount;
-
-  if (playerCount <= 0) {
-    playerCount = DEFAULT_PLAYER_COUNT;
-  }
-  if (playerCount > MAX_PLAYERS) {
-    playerCount = MAX_PLAYERS;
-  }
-
-  return playerCount;
-}
-
-static bool samecharactername(const Character *character, const char *name) {
-  return character != NULL && name != NULL && character->name[0] != '\0' &&
-         strcmp(character->name, name) == 0;
-}
-
-static int findcharacterindexbyname(const char *name) {
-  if (name == NULL || name[0] == '\0') {
-    return -1;
-  }
-
-  for (int i = 0; i < gGame.characterCount; i++) {
-    if (samecharactername(&gGame.availableCharacters[i], name)) {
-      return i;
-    }
-  }
-
-  return -1;
-}
-
-static void setplayercharacter(int playerIndex, int characterIndex) {
-  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS || characterIndex < 0 ||
-      characterIndex >= gGame.characterCount) {
-    return;
-  }
-
-  gGame.players[playerIndex].character =
-      gGame.availableCharacters[characterIndex];
-}
-
-static bool playerhascharacter(int playerIndex, int characterIndex) {
-  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS || characterIndex < 0 ||
-      characterIndex >= gGame.characterCount) {
-    return false;
-  }
-
-  return samecharactername(&gGame.players[playerIndex].character,
-                           gGame.availableCharacters[characterIndex].name);
-}
-
-static void normalizeplayercharacter(int playerIndex) {
-  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS ||
-      gGame.characterCount <= 0) {
-    return;
-  }
-
-  if (findcharacterindexbyname(gGame.players[playerIndex].character.name) < 0) {
-    gGame.players[playerIndex].character = gGame.availableCharacters[0];
-  }
-}
 
 static int fittextsize(const char *text, int maxWidth, int fontSize,
                        int minFontSize) {
@@ -220,25 +156,6 @@ static bool canadvance(void) {
   }
 
   return true;
-}
-
-static void normalizemenuselection(void) {
-  if (gGame.selectedMode != GAME_MODE_1V1) {
-    gGame.selectedMode = GAME_MODE_1V1;
-  }
-  gGame.playerCount = activeplayercount();
-
-  if (gGame.characterCount > 0) {
-    for (int i = 0; i < activeplayercount(); i++) {
-      normalizeplayercharacter(i);
-    }
-  }
-
-  if (gGame.availableMaps.count > 0 &&
-      (gGame.selectedMapIndex < 0 ||
-       gGame.selectedMapIndex >= gGame.availableMaps.count)) {
-    gGame.selectedMapIndex = 0;
-  }
 }
 
 static void advancemenu(void) {
@@ -394,11 +311,12 @@ static void updatecharactersslide(MenuLayout layout) {
     return;
   }
 
-  for (int playerIndex = 0; playerIndex < activeplayercount(); playerIndex++) {
+  for (int playerIndex = 0; playerIndex < getActivePlayerCount();
+       playerIndex++) {
     for (int i = 0; i < gGame.characterCount; i++) {
       Rectangle card = charactercard(layout.content, playerIndex, i);
       if (wasclicked(card)) {
-        setplayercharacter(playerIndex, i);
+        setPlayerCharacter(playerIndex, i);
       }
     }
   }
@@ -481,7 +399,8 @@ static void drawcharactersslide(MenuLayout layout) {
     return;
   }
 
-  for (int playerIndex = 0; playerIndex < activeplayercount(); playerIndex++) {
+  for (int playerIndex = 0; playerIndex < getActivePlayerCount();
+       playerIndex++) {
     Rectangle section = playersection(layout.content, playerIndex);
     char label[32];
 
@@ -491,7 +410,7 @@ static void drawcharactersslide(MenuLayout layout) {
 
     for (int i = 0; i < gGame.characterCount; i++) {
       Rectangle card = charactercard(layout.content, playerIndex, i);
-      bool selected = playerhascharacter(playerIndex, i);
+      bool selected = playerHasCharacter(playerIndex, i);
       bool hovered = CheckCollisionPointRec(mouse, card);
 
       drawcard(gGame.availableCharacters[i].name, card, selected, hovered, true,
@@ -557,7 +476,7 @@ static void drawmapsslide(MenuLayout layout) {
 }
 
 void menuScreenUpdate(void) {
-  normalizemenuselection();
+  normalizeGameSelections();
 
   MenuLayout layout = getmenulayout(GetScreenWidth(), GetScreenHeight());
 
@@ -589,7 +508,7 @@ void menuScreenUpdate(void) {
 }
 
 void menuScreenDraw(int currentWidth, int currentHeight) {
-  normalizemenuselection();
+  normalizeGameSelections();
 
   MenuLayout layout = getmenulayout(currentWidth, currentHeight);
 

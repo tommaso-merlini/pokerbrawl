@@ -22,18 +22,22 @@ static Character makecharacter(const char *name) {
   return character;
 }
 
-static bool characternameexists(const char *name) {
+static int findcharacterindexbyname(const char *name) {
   if (name == NULL || name[0] == '\0') {
-    return false;
+    return -1;
   }
 
   for (int i = 0; i < gGame.characterCount; i++) {
     if (strcmp(gGame.availableCharacters[i].name, name) == 0) {
-      return true;
+      return i;
     }
   }
 
-  return false;
+  return -1;
+}
+
+static bool characternameexists(const char *name) {
+  return findcharacterindexbyname(name) >= 0;
 }
 
 static Character defaultcharacter(void) {
@@ -59,6 +63,60 @@ static int modeplayercount(GameMode mode) {
   }
 
   return DEFAULT_PLAYER_COUNT;
+}
+
+int getActivePlayerCount(void) {
+  int playerCount = gGame.playerCount;
+
+  if (playerCount <= 0) {
+    playerCount = DEFAULT_PLAYER_COUNT;
+  }
+  if (playerCount > MAX_PLAYERS) {
+    playerCount = MAX_PLAYERS;
+  }
+
+  return playerCount;
+}
+
+bool setPlayerCharacter(int playerIndex, int characterIndex) {
+  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS || characterIndex < 0 ||
+      characterIndex >= gGame.characterCount) {
+    return false;
+  }
+
+  gGame.players[playerIndex].character =
+      gGame.availableCharacters[characterIndex];
+  return true;
+}
+
+bool playerHasCharacter(int playerIndex, int characterIndex) {
+  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS || characterIndex < 0 ||
+      characterIndex >= gGame.characterCount) {
+    return false;
+  }
+
+  return findcharacterindexbyname(gGame.players[playerIndex].character.name) ==
+         characterIndex;
+}
+
+void normalizeGameSelections(void) {
+  if (gGame.selectedMode != GAME_MODE_1V1) {
+    gGame.selectedMode = GAME_MODE_1V1;
+  }
+  gGame.playerCount = getActivePlayerCount();
+
+  if (gGame.characterCount > 0) {
+    for (int i = 0; i < gGame.playerCount; i++) {
+      gGame.players[i].character =
+          normalizedcharacter(gGame.players[i].character);
+    }
+  }
+
+  if (gGame.availableMaps.count > 0 &&
+      (gGame.selectedMapIndex < 0 ||
+       gGame.selectedMapIndex >= gGame.availableMaps.count)) {
+    gGame.selectedMapIndex = 0;
+  }
 }
 
 static void initcharacters(void) {

@@ -32,6 +32,10 @@ typedef struct GameState {
 extern GameState gGame;
 
 void initGameState(void);
+int getActivePlayerCount(void);
+bool setPlayerCharacter(int playerIndex, int characterIndex);
+bool playerHasCharacter(int playerIndex, int characterIndex);
+void normalizeGameSelections(void);
 bool startGameWithMap(int index);
 void returnToMenu(void);
 
