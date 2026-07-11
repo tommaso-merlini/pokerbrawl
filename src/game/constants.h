@@ -1,0 +1,7 @@
+#ifndef GAME_CONSTANTS_H
+#define GAME_CONSTANTS_H
+
+#define MAX_PLAYERS 4
+#define DEFAULT_PLAYER_COUNT 2
+
+#endif

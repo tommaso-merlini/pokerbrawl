@@ -1,7 +1,6 @@
+#include "game/game.h"
+#include "input/input.h"
 #include "raylib.h"
-#include "game_state.h"
-#include "screens/game.h"
-#include "screens/menu/menu.h"
 
 int main(void) {
   const int screenWidth = 800;
@@ -9,7 +8,8 @@ int main(void) {
   const char *title = "PokerBrawl";
 
   InitWindow(screenWidth, screenHeight, title);
-  initGameState();
+  GameState game;
+  initGameState(&game);
 
   int monitor = GetCurrentMonitor();
   SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
@@ -18,33 +18,11 @@ int main(void) {
   SetTargetFPS(60);
 
   while (!WindowShouldClose()) {
-    int currentWidth = GetScreenWidth();
-    int currentHeight = GetScreenHeight();
-
-    //update
-    switch (gGame.screen) {
-    case SCREEN_MENU:
-      menuScreenUpdate();
-      break;
-
-    case SCREEN_GAME:
-      gameScreenUpdate();
-      break;
-    }
+    InputState input = readInput();
+    updateGame(&game, &input, GetFrameTime());
 
     BeginDrawing();
-
-    //draw
-    switch (gGame.screen) {
-    case SCREEN_MENU:
-      menuScreenDraw(currentWidth, currentHeight);
-      break;
-
-    case SCREEN_GAME:
-      gameScreenDraw(currentWidth, currentHeight);
-      break;
-    }
-
+    drawGame(&game, GetScreenWidth(), GetScreenHeight());
     EndDrawing();
   }
 

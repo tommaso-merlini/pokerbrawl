@@ -5,7 +5,7 @@
 
 #include <stdbool.h>
 
-bool parsemaplistjson(const char *text, MapList *maps, char *error,
+bool parseMapListJson(const char *text, MapList *maps, char *error,
                       int errorSize);
 
 #endif

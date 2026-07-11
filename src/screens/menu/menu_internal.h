@@ -1,13 +1,10 @@
 #ifndef SCREENS_MENU_MENU_INTERNAL_H
 #define SCREENS_MENU_MENU_INTERNAL_H
 
+#include "../../game/game_state.h"
+#include "../../input/input.h"
+#include "../../ui/ui.h"
 #include "raylib.h"
-
-typedef enum MenuStep {
-  MENU_STEP_MODE,
-  MENU_STEP_CHARACTERS,
-  MENU_STEP_MAPS
-} MenuStep;
 
 typedef struct MenuLayout {
   Rectangle menuWindow;
@@ -21,14 +18,22 @@ MenuLayout menuGetLayout(int currentWidth, int currentHeight);
 Rectangle menuModeCard(Rectangle content);
 Rectangle menuPlayerSection(Rectangle content, int playerIndex);
 Rectangle menuCharacterCard(Rectangle content, int playerIndex,
-                            int characterIndex);
+                            int characterIndex, int characterCount);
 Rectangle menuMapCard(Rectangle content, int mapIndex);
 
-void menuModeUpdate(MenuLayout layout);
-void menuModeDraw(MenuLayout layout);
-void menuCharactersUpdate(MenuLayout layout);
-void menuCharactersDraw(MenuLayout layout);
-void menuMapsUpdate(MenuLayout layout);
-void menuMapsDraw(MenuLayout layout);
+bool menuCanAdvance(const GameState *game);
+void menuAdvance(GameState *game);
+void menuPrevious(GameState *game);
+void menuDrawFrame(const GameState *game, MenuLayout layout);
+
+void menuModeUpdate(GameState *game, const InputState *input,
+                    MenuLayout layout);
+void menuModeDraw(const GameState *game, MenuLayout layout);
+void menuCharactersUpdate(GameState *game, const InputState *input,
+                          MenuLayout layout);
+void menuCharactersDraw(const GameState *game, MenuLayout layout);
+void menuMapsUpdate(GameState *game, const InputState *input,
+                    MenuLayout layout);
+void menuMapsDraw(const GameState *game, MenuLayout layout);
 
 #endif

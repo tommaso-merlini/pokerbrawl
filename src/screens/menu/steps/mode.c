@@ -1,9 +1,8 @@
 #include "../menu_internal.h"
 
-#include "../../../game_state.h"
-#include "../../../ui.h"
+#include "../../../ui/ui.h"
 
-static const char *modelabel(GameMode mode) {
+static const char *modeLabel(GameMode mode) {
   switch (mode) {
   case GAME_MODE_1V1:
     return "1 VS 1";
@@ -12,18 +11,18 @@ static const char *modelabel(GameMode mode) {
   return "";
 }
 
-void menuModeUpdate(MenuLayout layout) {
+void menuModeUpdate(GameState *game, const InputState *input,
+                    MenuLayout layout) {
   Rectangle card = menuModeCard(layout.content);
 
-  if (uiWasClicked(card)) {
-    gGame.selectedMode = GAME_MODE_1V1;
+  if (uiWasClicked(input, card)) {
+    game->selectedMode = GAME_MODE_1V1;
   }
 }
 
-void menuModeDraw(MenuLayout layout) {
-  Vector2 mouse = GetMousePosition();
+void menuModeDraw(const GameState *game, MenuLayout layout) {
   Rectangle card = menuModeCard(layout.content);
-  bool hovered = CheckCollisionPointRec(mouse, card);
+  bool hovered = CheckCollisionPointRec(game->ui.pointer, card);
 
-  uiDrawCard(modelabel(gGame.selectedMode), card, true, hovered, true, 26);
+  uiDrawCard(modeLabel(game->selectedMode), card, true, hovered, true, 26);
 }

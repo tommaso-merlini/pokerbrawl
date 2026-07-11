@@ -1,37 +1,34 @@
 #include "../menu_internal.h"
 
-#include "../../../game_state.h"
-#include "../../../ui.h"
+#include "../../../ui/ui.h"
 
-void menuMapsUpdate(MenuLayout layout) {
-  Vector2 mouse = GetMousePosition();
-
-  for (int i = 0; i < gGame.availableMaps.count; i++) {
+void menuMapsUpdate(GameState *game, const InputState *input,
+                    MenuLayout layout) {
+  for (int i = 0; i < game->availableMaps.count; i++) {
     Rectangle card = menuMapCard(layout.content, i);
 
-    if (CheckCollisionPointRec(mouse, layout.content) && uiWasClicked(card)) {
-      gGame.selectedMapIndex = i;
+    if (CheckCollisionPointRec(input->pointer, layout.content) &&
+        uiWasClicked(input, card)) {
+      game->selectedMapIndex = i;
     }
   }
 }
 
-void menuMapsDraw(MenuLayout layout) {
-  Vector2 mouse = GetMousePosition();
-
-  if (gGame.availableMaps.count <= 0) {
-    uiDrawCenteredText(gGame.mapLoadError[0] != '\0' ? gGame.mapLoadError
+void menuMapsDraw(const GameState *game, MenuLayout layout) {
+  if (game->availableMaps.count <= 0) {
+    uiDrawCenteredText(game->mapLoadError[0] != '\0' ? game->mapLoadError
                                                      : "Nessuna mappa trovata",
                        layout.content, 22, 12, RED);
     return;
   }
 
-  for (int i = 0; i < gGame.availableMaps.count; i++) {
+  for (int i = 0; i < game->availableMaps.count; i++) {
     Rectangle card = menuMapCard(layout.content, i);
-    bool selected = i == gGame.selectedMapIndex;
-    bool hovered = CheckCollisionPointRec(mouse, layout.content) &&
-                   CheckCollisionPointRec(mouse, card);
+    bool selected = i == game->selectedMapIndex;
+    bool hovered = CheckCollisionPointRec(game->ui.pointer, layout.content) &&
+                   CheckCollisionPointRec(game->ui.pointer, card);
 
-    uiDrawCard(gGame.availableMaps.maps[i].name, card, selected, hovered, true,
+    uiDrawCard(game->availableMaps.maps[i].name, card, selected, hovered, true,
                20);
   }
 }

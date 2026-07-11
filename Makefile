@@ -1,5 +1,8 @@
-SOURCES = src/main.c src/game_state.c src/player.c src/ui.c src/screens/menu/menu.c src/screens/menu/menu_layout.c src/screens/menu/steps/mode.c src/screens/menu/steps/characters.c src/screens/menu/steps/maps.c src/screens/game.c src/json_reader.c src/map_loader.c
-HEADERS = src/game_state.h src/player.h src/character.h src/ui.h src/screens/menu/menu.h src/screens/menu/menu_internal.h src/screens/game.h src/json_reader.h src/map_loader.h src/map.h
+SOURCES := $(shell find src -type f -name '*.c')
+HEADERS := $(shell find src -type f -name '*.h')
+
+CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Iraylib/src
+LDLIBS = raylib/build/raylib/libraylib.a -lm -ldl -lpthread -lGL -lrt -lX11
 
 game: $(SOURCES) $(HEADERS)
-	cc $(SOURCES) -o game -Iraylib/src raylib/build/raylib/libraylib.a -lm -ldl -lpthread -lGL -lrt -lX11
+	cc $(CFLAGS) $(SOURCES) -o game $(LDLIBS)

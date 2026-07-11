@@ -1,6 +1,6 @@
 #include "ui.h"
 
-static int fittextsize(const char *text, int maxWidth, int fontSize,
+static int fitTextSize(const char *text, int maxWidth, int fontSize,
                        int minFontSize) {
   while (fontSize > minFontSize && MeasureText(text, fontSize) > maxWidth) {
     fontSize -= 2;
@@ -11,7 +11,7 @@ static int fittextsize(const char *text, int maxWidth, int fontSize,
 
 void uiDrawCenteredText(const char *text, Rectangle bounds, int fontSize,
                         int minFontSize, Color color) {
-  int size = fittextsize(text, (int)bounds.width - 24, fontSize, minFontSize);
+  int size = fitTextSize(text, (int)bounds.width - 24, fontSize, minFontSize);
   int textWidth = MeasureText(text, size);
 
   DrawText(text, (int)(bounds.x + bounds.width * 0.5f - textWidth * 0.5f),
@@ -38,7 +38,6 @@ void uiDrawCard(const char *text, Rectangle bounds, bool selected, bool hovered,
   uiDrawCenteredText(text, bounds, fontSize, 12, textColor);
 }
 
-bool uiWasClicked(Rectangle bounds) {
-  return CheckCollisionPointRec(GetMousePosition(), bounds) &&
-         IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+bool uiWasClicked(const InputState *input, Rectangle bounds) {
+  return inputClicked(input, bounds);
 }
