@@ -1,6 +1,7 @@
 #include "menu.h"
 
 #include "../game_state.h"
+#include "../ui.h"
 #include "raylib.h"
 
 #include <stdio.h>
@@ -22,24 +23,6 @@ typedef struct MenuLayout {
 
 static MenuStep menuStep = MENU_STEP_MODE;
 static float mapScroll = 0.0f;
-
-static int fittextsize(const char *text, int maxWidth, int fontSize,
-                       int minFontSize) {
-  while (fontSize > minFontSize && MeasureText(text, fontSize) > maxWidth) {
-    fontSize -= 2;
-  }
-
-  return fontSize;
-}
-
-static void drawcenteredtext(const char *text, Rectangle bounds, int fontSize,
-                             int minFontSize, Color color) {
-  int size = fittextsize(text, (int)bounds.width - 24, fontSize, minFontSize);
-  int textWidth = MeasureText(text, size);
-
-  DrawText(text, (int)(bounds.x + bounds.width * 0.5f - textWidth * 0.5f),
-           (int)(bounds.y + bounds.height * 0.5f - size * 0.5f), size, color);
-}
 
 static MenuLayout getmenulayout(int currentWidth, int currentHeight) {
   float panelWidth = (float)currentWidth - 80.0f;
@@ -119,31 +102,6 @@ static const char *modelabel(GameMode mode) {
   }
 
   return "";
-}
-
-static void drawcard(const char *text, Rectangle bounds, bool selected,
-                     bool hovered, bool enabled, int fontSize) {
-  Color fill = enabled ? (Color){210, 210, 210, 255}
-                       : (Color){170, 170, 170, 255};
-  Color outline = enabled ? BLACK : DARKGRAY;
-  Color textColor = enabled ? BLACK : DARKGRAY;
-
-  if (selected && enabled) {
-    fill = (Color){35, 115, 230, 255};
-    outline = (Color){12, 45, 120, 255};
-    textColor = RAYWHITE;
-  } else if (hovered && enabled) {
-    fill = (Color){235, 235, 235, 255};
-  }
-
-  DrawRectangleRec(bounds, fill);
-  DrawRectangleLinesEx(bounds, 2.0f, outline);
-  drawcenteredtext(text, bounds, fontSize, 12, textColor);
-}
-
-static bool wasclicked(Rectangle bounds) {
-  return CheckCollisionPointRec(GetMousePosition(), bounds) &&
-         IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
 static bool canadvance(void) {
@@ -301,7 +259,7 @@ static Rectangle mapcard(Rectangle content, int mapIndex) {
 static void updatemodeslide(MenuLayout layout) {
   Rectangle card = modecard(layout.content);
 
-  if (wasclicked(card)) {
+  if (uiWasClicked(card)) {
     gGame.selectedMode = GAME_MODE_1V1;
   }
 }
@@ -315,7 +273,7 @@ static void updatecharactersslide(MenuLayout layout) {
        playerIndex++) {
     for (int i = 0; i < gGame.characterCount; i++) {
       Rectangle card = charactercard(layout.content, playerIndex, i);
-      if (wasclicked(card)) {
+      if (uiWasClicked(card)) {
         setPlayerCharacter(playerIndex, i);
       }
     }
@@ -336,7 +294,7 @@ static void updatemapsslide(MenuLayout layout) {
                    card.y <= layout.content.y + layout.content.height;
 
     if (visible && CheckCollisionPointRec(mouse, layout.content) &&
-        wasclicked(card)) {
+        uiWasClicked(card)) {
       gGame.selectedMapIndex = i;
     }
   }
@@ -351,7 +309,7 @@ static void drawheader(MenuLayout layout) {
                            layout.menuWindow.width - 72.0f, 26.0f};
   float stepWidth = stepsBounds.width / 3.0f;
 
-  drawcenteredtext(MENU_TITLE, titleBounds, 40, 24, BLACK);
+  uiDrawCenteredText(MENU_TITLE, titleBounds, 40, 24, BLACK);
 
   for (int i = 0; i < 3; i++) {
     Rectangle step = {stepsBounds.x + (float)i * stepWidth, stepsBounds.y,
@@ -364,7 +322,7 @@ static void drawheader(MenuLayout layout) {
     DrawRectangleRec(step, fill);
     DrawRectangleLinesEx(step, 1.0f, selected ? (Color){12, 45, 120, 255}
                                              : DARKGRAY);
-    drawcenteredtext(steptitle((MenuStep)i), step, 14, 10, textColor);
+    uiDrawCenteredText(steptitle((MenuStep)i), step, 14, 10, textColor);
   }
 }
 
@@ -377,10 +335,10 @@ static void drawfooter(MenuLayout layout) {
 
   if (menuStep != MENU_STEP_MODE) {
     bool backHovered = CheckCollisionPointRec(mouse, layout.backButton);
-    drawcard("INDIETRO", layout.backButton, false, backHovered, true, 18);
+    uiDrawCard("INDIETRO", layout.backButton, false, backHovered, true, 18);
   }
 
-  drawcard(nextLabel, layout.nextButton, false, nextHovered, nextEnabled, 18);
+  uiDrawCard(nextLabel, layout.nextButton, false, nextHovered, nextEnabled, 18);
 }
 
 static void drawmodeslide(MenuLayout layout) {
@@ -388,14 +346,15 @@ static void drawmodeslide(MenuLayout layout) {
   Rectangle card = modecard(layout.content);
   bool hovered = CheckCollisionPointRec(mouse, card);
 
-  drawcard(modelabel(gGame.selectedMode), card, true, hovered, true, 26);
+  uiDrawCard(modelabel(gGame.selectedMode), card, true, hovered, true, 26);
 }
 
 static void drawcharactersslide(MenuLayout layout) {
   Vector2 mouse = GetMousePosition();
 
   if (gGame.characterCount <= 0) {
-    drawcenteredtext("Nessun personaggio trovato", layout.content, 22, 12, RED);
+    uiDrawCenteredText("Nessun personaggio trovato", layout.content, 22, 12,
+                       RED);
     return;
   }
 
@@ -413,8 +372,8 @@ static void drawcharactersslide(MenuLayout layout) {
       bool selected = playerHasCharacter(playerIndex, i);
       bool hovered = CheckCollisionPointRec(mouse, card);
 
-      drawcard(gGame.availableCharacters[i].name, card, selected, hovered, true,
-               20);
+      uiDrawCard(gGame.availableCharacters[i].name, card, selected, hovered,
+                 true, 20);
     }
   }
 }
@@ -423,9 +382,9 @@ static void drawmapsslide(MenuLayout layout) {
   Vector2 mouse = GetMousePosition();
 
   if (gGame.availableMaps.count <= 0) {
-    drawcenteredtext(gGame.mapLoadError[0] != '\0' ? gGame.mapLoadError
-                                                   : "Nessuna mappa trovata",
-                     layout.content, 22, 12, RED);
+    uiDrawCenteredText(gGame.mapLoadError[0] != '\0' ? gGame.mapLoadError
+                                                     : "Nessuna mappa trovata",
+                       layout.content, 22, 12, RED);
     return;
   }
 
@@ -446,8 +405,8 @@ static void drawmapsslide(MenuLayout layout) {
       continue;
     }
 
-    drawcard(gGame.availableMaps.maps[i].name, card, selected, hovered, true,
-             20);
+    uiDrawCard(gGame.availableMaps.maps[i].name, card, selected, hovered, true,
+               20);
   }
 
   EndScissorMode();
@@ -487,10 +446,10 @@ void menuScreenUpdate(void) {
     advancemenu();
   }
 
-  if (menuStep != MENU_STEP_MODE && wasclicked(layout.backButton)) {
+  if (menuStep != MENU_STEP_MODE && uiWasClicked(layout.backButton)) {
     previousmenu();
   }
-  if (wasclicked(layout.nextButton)) {
+  if (uiWasClicked(layout.nextButton)) {
     advancemenu();
   }
 
