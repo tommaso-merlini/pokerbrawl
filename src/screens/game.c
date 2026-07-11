@@ -56,12 +56,11 @@ static const char *getplayercharactername(int playerIndex) {
     return "Unknown";
   }
 
-  int characterIndex = gGame.playerSetups[playerIndex].selectedCharacterIndex;
-  if (characterIndex < 0 || characterIndex >= gGame.characterCount) {
+  if (gGame.players[playerIndex].character.name[0] == '\0') {
     return "Unknown";
   }
 
-  return gGame.availableCharacters[characterIndex].name;
+  return gGame.players[playerIndex].character.name;
 }
 
 static Vector2 maptoscreen(Vector2 point, const ArenaMap *map, int screenWidth,

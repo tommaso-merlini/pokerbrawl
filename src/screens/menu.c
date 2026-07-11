@@ -3,6 +3,9 @@
 #include "../game_state.h"
 #include "raylib.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #define MENU_TITLE "BRAWLHALLA"
 
 typedef enum MenuStep {
@@ -20,6 +23,69 @@ typedef struct MenuLayout {
 
 static MenuStep menuStep = MENU_STEP_MODE;
 static float mapScroll = 0.0f;
+
+static int activeplayercount(void) {
+  int playerCount = gGame.playerCount;
+
+  if (playerCount <= 0) {
+    playerCount = DEFAULT_PLAYER_COUNT;
+  }
+  if (playerCount > MAX_PLAYERS) {
+    playerCount = MAX_PLAYERS;
+  }
+
+  return playerCount;
+}
+
+static bool samecharactername(const Character *character, const char *name) {
+  return character != NULL && name != NULL && character->name[0] != '\0' &&
+         strcmp(character->name, name) == 0;
+}
+
+static int findcharacterindexbyname(const char *name) {
+  if (name == NULL || name[0] == '\0') {
+    return -1;
+  }
+
+  for (int i = 0; i < gGame.characterCount; i++) {
+    if (samecharactername(&gGame.availableCharacters[i], name)) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+static void setplayercharacter(int playerIndex, int characterIndex) {
+  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS || characterIndex < 0 ||
+      characterIndex >= gGame.characterCount) {
+    return;
+  }
+
+  gGame.players[playerIndex].character =
+      gGame.availableCharacters[characterIndex];
+}
+
+static bool playerhascharacter(int playerIndex, int characterIndex) {
+  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS || characterIndex < 0 ||
+      characterIndex >= gGame.characterCount) {
+    return false;
+  }
+
+  return samecharactername(&gGame.players[playerIndex].character,
+                           gGame.availableCharacters[characterIndex].name);
+}
+
+static void normalizeplayercharacter(int playerIndex) {
+  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS ||
+      gGame.characterCount <= 0) {
+    return;
+  }
+
+  if (findcharacterindexbyname(gGame.players[playerIndex].character.name) < 0) {
+    gGame.players[playerIndex].character = gGame.availableCharacters[0];
+  }
+}
 
 static int fittextsize(const char *text, int maxWidth, int fontSize,
                        int minFontSize) {
@@ -160,13 +226,11 @@ static void normalizemenuselection(void) {
   if (gGame.selectedMode != GAME_MODE_1V1) {
     gGame.selectedMode = GAME_MODE_1V1;
   }
+  gGame.playerCount = activeplayercount();
 
   if (gGame.characterCount > 0) {
-    for (int i = 0; i < MAX_PLAYERS; i++) {
-      int selectedCharacter = gGame.playerSetups[i].selectedCharacterIndex;
-      if (selectedCharacter < 0 || selectedCharacter >= gGame.characterCount) {
-        gGame.playerSetups[i].selectedCharacterIndex = 0;
-      }
+    for (int i = 0; i < activeplayercount(); i++) {
+      normalizeplayercharacter(i);
     }
   }
 
@@ -330,11 +394,11 @@ static void updatecharactersslide(MenuLayout layout) {
     return;
   }
 
-  for (int playerIndex = 0; playerIndex < 2; playerIndex++) {
+  for (int playerIndex = 0; playerIndex < activeplayercount(); playerIndex++) {
     for (int i = 0; i < gGame.characterCount; i++) {
       Rectangle card = charactercard(layout.content, playerIndex, i);
       if (wasclicked(card)) {
-        gGame.playerSetups[playerIndex].selectedCharacterIndex = i;
+        setplayercharacter(playerIndex, i);
       }
     }
   }
@@ -417,17 +481,17 @@ static void drawcharactersslide(MenuLayout layout) {
     return;
   }
 
-  for (int playerIndex = 0; playerIndex < 2; playerIndex++) {
+  for (int playerIndex = 0; playerIndex < activeplayercount(); playerIndex++) {
     Rectangle section = playersection(layout.content, playerIndex);
-    const char *label = playerIndex == 0 ? "Player 1" : "Player 2";
-    int selectedCharacter =
-        gGame.playerSetups[playerIndex].selectedCharacterIndex;
+    char label[32];
+
+    snprintf(label, sizeof(label), "Player %d", playerIndex + 1);
 
     DrawText(label, (int)section.x, (int)section.y, 24, BLACK);
 
     for (int i = 0; i < gGame.characterCount; i++) {
       Rectangle card = charactercard(layout.content, playerIndex, i);
-      bool selected = i == selectedCharacter;
+      bool selected = playerhascharacter(playerIndex, i);
       bool hovered = CheckCollisionPointRec(mouse, card);
 
       drawcard(gGame.availableCharacters[i].name, card, selected, hovered, true,

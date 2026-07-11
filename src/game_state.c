@@ -3,7 +3,9 @@
 #include "map_loader.h"
 #include "raylib.h"
 
+#include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #define MAP_FILE_PATH "mappe/mappe.json"
 #define FALLBACK_SPAWN_SPACING 54.0f
@@ -13,6 +15,42 @@ GameState gGame = {0};
 static const char *DEFAULT_CHARACTER_NAMES[] = {
     "Giordi", "Cianki", "Tommi", "Pippo", "Alessio",
 };
+
+static Character makecharacter(const char *name) {
+  Character character = {0};
+  snprintf(character.name, sizeof(character.name), "%s", name);
+  return character;
+}
+
+static bool characternameexists(const char *name) {
+  if (name == NULL || name[0] == '\0') {
+    return false;
+  }
+
+  for (int i = 0; i < gGame.characterCount; i++) {
+    if (strcmp(gGame.availableCharacters[i].name, name) == 0) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static Character defaultcharacter(void) {
+  if (gGame.characterCount <= 0) {
+    return (Character){0};
+  }
+
+  return gGame.availableCharacters[0];
+}
+
+static Character normalizedcharacter(Character character) {
+  if (characternameexists(character.name)) {
+    return character;
+  }
+
+  return defaultcharacter();
+}
 
 static int modeplayercount(GameMode mode) {
   switch (mode) {
@@ -28,15 +66,25 @@ static void initcharacters(void) {
       (int)(sizeof(DEFAULT_CHARACTER_NAMES) /
             sizeof(DEFAULT_CHARACTER_NAMES[0]));
 
-  gGame.characterCount = defaultCharacterCount;
-  if (gGame.characterCount > MAX_CHARACTERS) {
-    gGame.characterCount = MAX_CHARACTERS;
-  }
+  gGame.characterCount = 0;
 
-  for (int i = 0; i < gGame.characterCount; i++) {
-    snprintf(gGame.availableCharacters[i].name,
-             sizeof(gGame.availableCharacters[i].name), "%s",
-             DEFAULT_CHARACTER_NAMES[i]);
+  for (int i = 0; i < defaultCharacterCount &&
+                  gGame.characterCount < MAX_CHARACTERS;
+       i++) {
+    const char *name = DEFAULT_CHARACTER_NAMES[i];
+    Character character = {0};
+
+    if (name == NULL || name[0] == '\0') {
+      continue;
+    }
+
+    character = makecharacter(name);
+    if (character.name[0] == '\0' || characternameexists(character.name)) {
+      continue;
+    }
+
+    gGame.availableCharacters[gGame.characterCount] = character;
+    gGame.characterCount++;
   }
 }
 
@@ -51,6 +99,12 @@ static Vector2 fallbackspawnpoint(const ArenaMap *map, int playerIndex,
 }
 
 static void resetplayers(const ArenaMap *map) {
+  Character selectedCharacters[MAX_PLAYERS] = {0};
+
+  for (int i = 0; i < MAX_PLAYERS; i++) {
+    selectedCharacters[i] = normalizedcharacter(gGame.players[i].character);
+  }
+
   gGame.playerCount = modeplayercount(gGame.selectedMode);
 
   if (gGame.playerCount > MAX_PLAYERS) {
@@ -59,6 +113,7 @@ static void resetplayers(const ArenaMap *map) {
 
   for (int i = 0; i < MAX_PLAYERS; i++) {
     gGame.players[i] = (Player){0};
+    gGame.players[i].character = selectedCharacters[i];
   }
 
   for (int i = 0; i < gGame.playerCount; i++) {
@@ -66,7 +121,7 @@ static void resetplayers(const ArenaMap *map) {
                              ? map->spawnpoints[i]
                              : fallbackspawnpoint(map, i, gGame.playerCount);
 
-    initPlayer(&gGame.players[i], spawnpoint);
+    initPlayer(&gGame.players[i], spawnpoint, selectedCharacters[i]);
   }
 }
 
@@ -80,7 +135,7 @@ void initGameState(void) {
   initcharacters();
 
   for (int i = 0; i < MAX_PLAYERS; i++) {
-    gGame.playerSetups[i].selectedCharacterIndex = 0;
+    gGame.players[i].character = defaultcharacter();
   }
 
   char *mapText = LoadFileText(MAP_FILE_PATH);

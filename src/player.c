@@ -89,11 +89,12 @@ static void resolveplayervertical(Player *player, const ArenaMap *map) {
   }
 }
 
-void initPlayer(Player *player, Vector2 spawnpoint) {
+void initPlayer(Player *player, Vector2 spawnpoint, Character character) {
   *player = (Player){0};
   player->position = spawnpoint;
   player->velocity = (Vector2){0.0f, 0.0f};
   player->size = (Vector2){PLAYER_WIDTH, PLAYER_HEIGHT};
+  player->character = character;
   player->onGround = false;
   player->spawned = true;
 }

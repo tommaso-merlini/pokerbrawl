@@ -3,23 +3,13 @@
 
 #include <stdbool.h>
 
+#include "character.h"
 #include "map.h"
 #include "player.h"
-
-#define MAX_CHARACTERS 8
-#define MAX_CHARACTER_NAME 64
 
 typedef enum GameMode {
   GAME_MODE_1V1
 } GameMode;
-
-typedef struct Character {
-  char name[MAX_CHARACTER_NAME];
-} Character;
-
-typedef struct PlayerSetup {
-  int selectedCharacterIndex;
-} PlayerSetup;
 
 typedef enum GameScreen {
   SCREEN_MENU,
@@ -31,7 +21,6 @@ typedef struct GameState {
   GameMode selectedMode;
   Character availableCharacters[MAX_CHARACTERS];
   int characterCount;
-  PlayerSetup playerSetups[MAX_PLAYERS];
   MapList availableMaps;
   int selectedMapIndex;
   ArenaMap currentMap;
