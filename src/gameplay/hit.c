@@ -1,7 +1,8 @@
 #include "hit.h"
-#include <stdio.h>
 
 #include "../game/game_state.h"
+
+#define PLAYER_HURT_DURATION 0.28f
 
 static Rectangle playerBounds(const Player *player) {
   return (Rectangle){
@@ -24,7 +25,9 @@ static bool hitPlayer(GameState *game, const Hit *hit) {
     }
 
     player->healthPoints -= hit->damage;
-    printf("player hit!\n");
+    player->velocity = hit->knockback;
+    player->hurtTimer = PLAYER_HURT_DURATION;
+    player->onGround = false;
     if (player->healthPoints < 0) {
       player->healthPoints = 0;
     }
@@ -41,7 +44,6 @@ static void removeHit(GameState *game, int index) {
 }
 
 bool addHit(GameState *game, Hit hit) {
-  printf("add hit!\n");
   if (!game || game->hitCount >= MAX_HITS) {
     return false;
   }

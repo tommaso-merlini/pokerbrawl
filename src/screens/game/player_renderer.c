@@ -3,6 +3,9 @@
 #include <math.h>
 
 static PlayerSpriteAnimation animationForPlayer(const Player *player) {
+  if (player->hurtTimer > 0.0f) {
+    return PLAYER_SPRITE_HURT;
+  }
   if (!player->onGround) {
     return player->velocity.y < 0.0f ? PLAYER_SPRITE_JUMP : PLAYER_SPRITE_FALL;
   }

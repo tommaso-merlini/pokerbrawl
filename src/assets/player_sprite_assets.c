@@ -25,6 +25,7 @@ static const PlayerSpriteClip PLAYER_SPRITE_CLIPS
             {{PLAYER_SPRITE_POSE_WALK_1, PLAYER_SPRITE_POSE_WALK_2}, 2, 0.14f},
         [PLAYER_SPRITE_JUMP] = {{PLAYER_SPRITE_POSE_JUMP}, 1, 0.0f},
         [PLAYER_SPRITE_FALL] = {{PLAYER_SPRITE_POSE_FALL}, 1, 0.0f},
+        [PLAYER_SPRITE_HURT] = {{PLAYER_SPRITE_POSE_FALL}, 1, 0.0f},
 };
 
 static bool loadCharacterPoses(PlayerSpriteAssets *assets,

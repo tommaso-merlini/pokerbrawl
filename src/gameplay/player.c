@@ -5,6 +5,7 @@
 #define PLAYER_SPEED 400.0f
 #define PLAYER_JUMP_SPEED 700.0f
 #define PLAYER_GRAVITY 1800.0f
+#define PLAYER_HURT_CONTROL_MULTIPLIER 0.15f
 
 void initPlayer(Player *player, Vector2 spawnpoint, Character character) {
   *player = (Player){
@@ -18,17 +19,29 @@ void initPlayer(Player *player, Vector2 spawnpoint, Character character) {
 
 void updatePlayer(Player *player, const ArenaMap *map, PlayerInput input,
                   float dt) {
-  if (input.move < 0.0f) {
-    player->facingLeft = true;
-  } else if (input.move > 0.0f) {
-    player->facingLeft = false;
-  }
+  if (player->hurtTimer > 0.0f) {
+    player->hurtTimer -= dt;
+    if (player->hurtTimer < 0.0f) {
+      player->hurtTimer = 0.0f;
+    }
 
-  player->velocity.x = input.move * PLAYER_SPEED;
+    // Keep most of the impact momentum while still allowing a little air
+    // control. This prevents knockback from being cancelled on the next frame.
+    player->velocity.x += input.move * PLAYER_SPEED *
+                          PLAYER_HURT_CONTROL_MULTIPLIER * dt;
+  } else {
+    if (input.move < 0.0f) {
+      player->facingLeft = true;
+    } else if (input.move > 0.0f) {
+      player->facingLeft = false;
+    }
 
-  if (input.jumpPressed && player->onGround) {
-    player->velocity.y = -PLAYER_JUMP_SPEED;
-    player->onGround = false;
+    player->velocity.x = input.move * PLAYER_SPEED;
+
+    if (input.jumpPressed && player->onGround) {
+      player->velocity.y = -PLAYER_JUMP_SPEED;
+      player->onGround = false;
+    }
   }
 
   player->position.x += player->velocity.x * dt;

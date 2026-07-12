@@ -23,6 +23,7 @@ typedef enum PlayerSpriteAnimation {
   PLAYER_SPRITE_WALK,
   PLAYER_SPRITE_JUMP,
   PLAYER_SPRITE_FALL,
+  PLAYER_SPRITE_HURT,
   PLAYER_SPRITE_ANIMATION_COUNT
 } PlayerSpriteAnimation;
 

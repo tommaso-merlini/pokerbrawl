@@ -24,10 +24,20 @@ void drawGameLabels(const GameState *game) {
 
   for (int i = 0; i < game->playerCount && i < MAX_PLAYERS; i++) {
     const char *name = game->players[i].character.name;
-    char label[128];
-    snprintf(label, sizeof(label), "Player %d: %s | HP: %d", i + 1,
-             name[0] != '\0' ? name : "Unknown",
+    char nameLabel[96];
+    char healthLabel[32];
+    snprintf(nameLabel, sizeof(nameLabel), "P%d %s", i + 1,
+             name[0] != '\0' ? name : "Unknown");
+    snprintf(healthLabel, sizeof(healthLabel), "  HP: %d/100",
              game->players[i].healthPoints);
-    DrawText(label, 24, 58 + i * 24, 20, RAYWHITE);
+
+    int y = 58 + i * 26;
+    DrawText(nameLabel, 24, y, 20, RAYWHITE);
+    Color healthColor = game->players[i].healthPoints > 50
+                            ? LIME
+                            : (game->players[i].healthPoints > 20 ? ORANGE
+                                                                  : RED);
+    DrawText(healthLabel, 24 + MeasureText(nameLabel, 20), y, 20,
+             healthColor);
   }
 }

@@ -15,6 +15,7 @@ typedef struct Hit {
   int damage;
   Vector2 position;
   Vector2 velocity;
+  Vector2 knockback;
   float lifetime;
 } Hit;
 

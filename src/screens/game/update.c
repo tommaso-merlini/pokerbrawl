@@ -2,6 +2,8 @@
 
 #define BODY_HIT_DAMAGE 10
 #define BODY_HIT_OFFSET 60.0f
+#define BODY_KNOCKBACK_HORIZONTAL 620.0f
+#define BODY_KNOCKBACK_VERTICAL 420.0f
 
 static void createBodyHit(GameState *game, int attackerIndex) {
   const Player *attacker = &game->players[attackerIndex];
@@ -15,6 +17,10 @@ static void createBodyHit(GameState *game, int attackerIndex) {
                        attacker->position.x + direction * BODY_HIT_OFFSET,
                        attacker->position.y,
                    },
+                   .knockback = {
+                       direction * BODY_KNOCKBACK_HORIZONTAL,
+                       -BODY_KNOCKBACK_VERTICAL,
+                   },
                });
 }
 
@@ -26,7 +32,8 @@ void gameScreenUpdate(GameState *game, const InputState *input, float dt) {
   for (int i = 0; i < game->playerCount && i < MAX_PLAYERS; i++) {
     if (game->players[i].spawned) {
       updatePlayer(&game->players[i], &game->currentMap, input->players[i], dt);
-      if (input->players[i].attackPressed) {
+      if (input->players[i].attackPressed &&
+          game->players[i].hurtTimer <= 0.0f) {
         createBodyHit(game, i);
       }
     }
