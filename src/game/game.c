@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include "../screens/game/game_screen.h"
+#include "../screens/game_end/game_end.h"
 #include "../screens/menu/menu.h"
 
 void updateGame(GameState *game, const InputState *input, float dt) {
@@ -12,6 +13,9 @@ void updateGame(GameState *game, const InputState *input, float dt) {
     break;
   case SCREEN_GAME:
     gameScreenUpdate(game, input, dt);
+    break;
+  case SCREEN_GAME_END:
+    gameEndScreenUpdate(game, input);
     break;
   }
 }
@@ -26,6 +30,9 @@ void drawGame(const GameState *game, const PlayerRenderer *playerRenderer,
   case SCREEN_GAME:
     gameScreenDraw(game, playerRenderer, mapRenderer, screenWidth,
                    screenHeight);
+    break;
+  case SCREEN_GAME_END:
+    gameEndScreenDraw(game, screenWidth, screenHeight);
     break;
   }
 }

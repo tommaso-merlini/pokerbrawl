@@ -43,4 +43,5 @@ void gameScreenUpdate(GameState *game, const InputState *input, float dt) {
 
   updateHits(game, dt);
   handlePlayerDeaths(game);
+  finishMatchIfNeeded(game);
 }

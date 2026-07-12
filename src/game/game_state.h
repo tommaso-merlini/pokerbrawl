@@ -10,7 +10,7 @@
 
 typedef enum GameMode { GAME_MODE_1V1 } GameMode;
 
-typedef enum GameScreen { SCREEN_MENU, SCREEN_GAME } GameScreen;
+typedef enum GameScreen { SCREEN_MENU, SCREEN_GAME, SCREEN_GAME_END } GameScreen;
 
 typedef enum MenuStep {
   MENU_STEP_MODE,
@@ -38,6 +38,7 @@ typedef struct GameState {
   ArenaMap currentMap;
   Player players[MAX_PLAYERS];
   int playerCount;
+  int winnerPlayerIndex;
   char mapLoadError[512];
   Hit hits[MAX_HITS];
   int hitCount;

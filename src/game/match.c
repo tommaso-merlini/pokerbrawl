@@ -57,6 +57,23 @@ void handlePlayerDeaths(GameState *game) {
   }
 }
 
+void finishMatchIfNeeded(GameState *game) {
+  int remainingPlayers = 0;
+  int winnerIndex = -1;
+
+  for (int i = 0; i < game->playerCount && i < MAX_PLAYERS; i++) {
+    if (game->players[i].spawned && game->players[i].lives > 0) {
+      remainingPlayers++;
+      winnerIndex = i;
+    }
+  }
+
+  if (remainingPlayers <= 1) {
+    game->winnerPlayerIndex = remainingPlayers == 1 ? winnerIndex : -1;
+    game->screen = SCREEN_GAME_END;
+  }
+}
+
 void resetPlayers(GameState *game, const ArenaMap *map) {
   clearHits(game);
 
@@ -86,6 +103,7 @@ bool startGameWithMap(GameState *game, int index) {
 
   game->selectedMapIndex = index;
   game->currentMap = game->availableMaps.maps[index];
+  game->winnerPlayerIndex = -1;
   resetPlayers(game, &game->currentMap);
   game->screen = SCREEN_GAME;
   return true;

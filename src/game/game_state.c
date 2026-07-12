@@ -35,6 +35,7 @@ void initGameState(GameState *game) {
       .selectedMode = GAME_MODE_1V1,
       .selectedMapIndex = -1,
       .playerCount = DEFAULT_PLAYER_COUNT,
+      .winnerPlayerIndex = -1,
   };
 
   initAvailableCharacters(game);
@@ -44,4 +45,8 @@ void initGameState(GameState *game) {
   loadMaps(game);
 }
 
-void returnToMenu(GameState *game) { game->screen = SCREEN_MENU; }
+void returnToMenu(GameState *game) {
+  game->screen = SCREEN_MENU;
+  game->menu.step = MENU_STEP_MODE;
+  game->winnerPlayerIndex = -1;
+}
