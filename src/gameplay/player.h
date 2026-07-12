@@ -13,6 +13,7 @@ typedef struct Player {
   Vector2 velocity;
   Vector2 size;
   int healthPoints;
+  int lives;
   float hurtTimer;
   Character character;
   bool facingLeft;
@@ -21,6 +22,7 @@ typedef struct Player {
 } Player;
 
 void initPlayer(Player *player, Vector2 spawnpoint, Character character);
+void respawnPlayer(Player *player, Vector2 spawnpoint);
 void updatePlayer(Player *player, const ArenaMap *map, PlayerInput input,
                   float dt);
 

@@ -1,5 +1,7 @@
 #include "game_screen.h"
 
+#include "../../game/game_state_internal.h"
+
 #define BODY_HIT_DAMAGE 10
 #define BODY_HIT_OFFSET 60.0f
 #define BODY_KNOCKBACK_HORIZONTAL 620.0f
@@ -40,4 +42,5 @@ void gameScreenUpdate(GameState *game, const InputState *input, float dt) {
   }
 
   updateHits(game, dt);
+  handlePlayerDeaths(game);
 }

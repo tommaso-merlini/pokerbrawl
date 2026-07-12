@@ -25,11 +25,16 @@ void drawGameLabels(const GameState *game) {
   for (int i = 0; i < game->playerCount && i < MAX_PLAYERS; i++) {
     const char *name = game->players[i].character.name;
     char nameLabel[96];
-    char healthLabel[32];
+    char statusLabel[64];
     snprintf(nameLabel, sizeof(nameLabel), "P%d %s", i + 1,
              name[0] != '\0' ? name : "Unknown");
-    snprintf(healthLabel, sizeof(healthLabel), "  HP: %d/100",
-             game->players[i].healthPoints);
+    if (game->players[i].spawned) {
+      snprintf(statusLabel, sizeof(statusLabel), "  Lives: %d  HP: %d/%d",
+               game->players[i].lives, game->players[i].healthPoints,
+               PLAYER_MAX_HEALTH);
+    } else {
+      snprintf(statusLabel, sizeof(statusLabel), "  Lives: 0  ELIMINATED");
+    }
 
     int y = 58 + i * 26;
     DrawText(nameLabel, 24, y, 20, RAYWHITE);
@@ -37,7 +42,7 @@ void drawGameLabels(const GameState *game) {
                             ? LIME
                             : (game->players[i].healthPoints > 20 ? ORANGE
                                                                   : RED);
-    DrawText(healthLabel, 24 + MeasureText(nameLabel, 20), y, 20,
+    DrawText(statusLabel, 24 + MeasureText(nameLabel, 20), y, 20,
              healthColor);
   }
 }

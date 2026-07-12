@@ -7,5 +7,6 @@ void initAvailableCharacters(GameState *game);
 Character defaultCharacter(const GameState *game);
 Character normalizedCharacter(const GameState *game, Character character);
 void resetPlayers(GameState *game, const ArenaMap *map);
+void handlePlayerDeaths(GameState *game);
 
 #endif

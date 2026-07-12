@@ -9,11 +9,23 @@
 
 void initPlayer(Player *player, Vector2 spawnpoint, Character character) {
   *player = (Player){
+      .character = character,
+      .lives = INITIAL_PLAYER_LIVES,
+  };
+  respawnPlayer(player, spawnpoint);
+}
+
+void respawnPlayer(Player *player, Vector2 spawnpoint) {
+  Character character = player->character;
+  int lives = player->lives;
+
+  *player = (Player){
       .position = spawnpoint,
       .size = {PLAYER_COLLIDER_WIDTH, PLAYER_COLLIDER_HEIGHT},
+      .healthPoints = PLAYER_MAX_HEALTH,
+      .lives = lives,
       .character = character,
       .spawned = true,
-      .healthPoints = 100
   };
 }
 
