@@ -25,8 +25,9 @@ void drawGameLabels(const GameState *game) {
   for (int i = 0; i < game->playerCount && i < MAX_PLAYERS; i++) {
     const char *name = game->players[i].character.name;
     char label[128];
-    snprintf(label, sizeof(label), "Player %d: %s", i + 1,
-             name[0] != '\0' ? name : "Unknown");
+    snprintf(label, sizeof(label), "Player %d: %s | HP: %d", i + 1,
+             name[0] != '\0' ? name : "Unknown",
+             game->players[i].healthPoints);
     DrawText(label, 24, 58 + i * 24, 20, RAYWHITE);
   }
 }

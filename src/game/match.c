@@ -19,6 +19,8 @@ static Vector2 fallbackSpawnPoint(const ArenaMap *map, int playerIndex,
 }
 
 void resetPlayers(GameState *game, const ArenaMap *map) {
+  clearHits(game);
+
   Character characters[MAX_PLAYERS] = {0};
   for (int i = 0; i < MAX_PLAYERS; i++) {
     characters[i] = normalizedCharacter(game, game->players[i].character);

@@ -12,11 +12,18 @@ void initPlayer(Player *player, Vector2 spawnpoint, Character character) {
       .size = {PLAYER_COLLIDER_WIDTH, PLAYER_COLLIDER_HEIGHT},
       .character = character,
       .spawned = true,
+      .healthPoints = 100
   };
 }
 
 void updatePlayer(Player *player, const ArenaMap *map, PlayerInput input,
                   float dt) {
+  if (input.move < 0.0f) {
+    player->facingLeft = true;
+  } else if (input.move > 0.0f) {
+    player->facingLeft = false;
+  }
+
   player->velocity.x = input.move * PLAYER_SPEED;
 
   if (input.jumpPressed && player->onGround) {

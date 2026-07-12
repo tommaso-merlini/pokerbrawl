@@ -12,7 +12,9 @@ typedef struct Player {
   Vector2 position;
   Vector2 velocity;
   Vector2 size;
+  int healthPoints;
   Character character;
+  bool facingLeft;
   bool onGround;
   bool spawned;
 } Player;

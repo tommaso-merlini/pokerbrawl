@@ -2,6 +2,7 @@
 #define GAME_GAME_STATE_H
 
 #include "../character.h"
+#include "../gameplay/hit.h"
 #include "../gameplay/player.h"
 #include "../maps/map.h"
 
@@ -38,6 +39,8 @@ typedef struct GameState {
   Player players[MAX_PLAYERS];
   int playerCount;
   char mapLoadError[512];
+  Hit hits[MAX_HITS];
+  int hitCount;
 } GameState;
 
 void initGameState(GameState *game);

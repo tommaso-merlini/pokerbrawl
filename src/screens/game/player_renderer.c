@@ -32,11 +32,7 @@ void updatePlayerRenderer(PlayerRenderer *renderer, const GameState *game,
 
     const Player *player = &game->players[i];
     PlayerSpriteAnimation nextAnimation = animationForPlayer(player);
-    if (player->velocity.x < -0.1f) {
-      state->facingLeft = true;
-    } else if (player->velocity.x > 0.1f) {
-      state->facingLeft = false;
-    }
+    state->facingLeft = player->facingLeft;
 
     if (state->animation != nextAnimation) {
       state->animation = nextAnimation;
