@@ -35,6 +35,7 @@ InputState readInput(void) {
   input.primaryPressed = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
   input.backPressed = IsKeyPressed(KEY_ESCAPE);
   input.confirmPressed = IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER);
+  input.debugTogglePressed = IsKeyPressed(KEY_F3);
   return input;
 }
 

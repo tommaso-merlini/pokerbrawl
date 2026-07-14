@@ -8,7 +8,7 @@
 
 Vector2 mapToScreen(Vector2 point, const ArenaMap *map, int width, int height);
 void drawArena(const ArenaMap *map, const MapRenderer *renderer, int width,
-               int height);
+               int height, bool showDebugBoxes);
 void drawPlayers(const GameState *game, const PlayerRenderer *renderer,
                  int width, int height);
 void drawGameLabels(const GameState *game);

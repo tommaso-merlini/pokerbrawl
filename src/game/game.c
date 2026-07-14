@@ -6,6 +6,9 @@
 
 void updateGame(GameState *game, const InputState *input, float dt) {
   game->ui.pointer = input->pointer;
+  if (input->debugTogglePressed) {
+    game->debugMapBoxes = !game->debugMapBoxes;
+  }
 
   switch (game->screen) {
   case SCREEN_MENU:

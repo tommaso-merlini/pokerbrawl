@@ -14,9 +14,18 @@ void gameScreenDraw(const GameState *game, const PlayerRenderer *playerRenderer,
     return;
   }
 
-  drawArena(&game->currentMap, mapRenderer, screenWidth, screenHeight);
+  drawArena(&game->currentMap, mapRenderer, screenWidth, screenHeight,
+            game->debugMapBoxes);
   drawPlayers(game, playerRenderer, screenWidth, screenHeight);
   drawGameLabels(game);
+
+  const char *debugLabel = game->debugMapBoxes
+                               ? "F3  DEBUG BOXES: ON"
+                               : "F3  DEBUG BOXES: OFF";
+  Color debugColor = game->debugMapBoxes ? LIME : (Color){180, 180, 180, 180};
+  int debugWidth = MeasureText(debugLabel, 18);
+  DrawText(debugLabel, screenWidth - debugWidth - 20, screenHeight - 34, 18,
+           debugColor);
 }
 
 void drawGameLabels(const GameState *game) {

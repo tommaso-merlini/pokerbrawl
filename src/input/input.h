@@ -18,6 +18,7 @@ typedef struct InputState {
   bool primaryPressed;
   bool backPressed;
   bool confirmPressed;
+  bool debugTogglePressed;
 } InputState;
 
 InputState readInput(void);

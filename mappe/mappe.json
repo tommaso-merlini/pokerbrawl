@@ -47,6 +47,40 @@
           "points": [[400, 700], [1200, 700], [1200, 760], [400, 760]]
         }
       ]
+    },
+    {
+      "name": "NEW ROXY",
+      "background": "assets/maps/new-roxy.png",
+      "width": 1600,
+      "height": 900,
+      "spawnpoints": [[560, 650], [1040, 650]],
+      "quads": [
+        {
+          "id": "main_stage",
+          "collidable": true,
+          "points": [[255, 710], [1345, 710], [1345, 790], [255, 790]]
+        },
+        {
+          "id": "left_booth",
+          "collidable": true,
+          "points": [[0, 625], [290, 625], [290, 730], [0, 730]]
+        },
+        {
+          "id": "right_booth",
+          "collidable": true,
+          "points": [[1310, 625], [1600, 625], [1600, 730], [1310, 730]]
+        },
+        {
+          "id": "left_balcony",
+          "collidable": false,
+          "points": [[250, 350], [610, 350], [610, 385], [250, 385]]
+        },
+        {
+          "id": "right_balcony",
+          "collidable": false,
+          "points": [[990, 350], [1350, 350], [1350, 385], [990, 385]]
+        }
+      ]
     }
   ]
 }
