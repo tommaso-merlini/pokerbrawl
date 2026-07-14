@@ -39,7 +39,7 @@ typedef struct GameState {
   Player players[MAX_PLAYERS];
   int playerCount;
   int winnerPlayerIndex;
-  bool debugMapBoxes;
+  bool debugMode;
   char mapLoadError[512];
   Hit hits[MAX_HITS];
   int hitCount;

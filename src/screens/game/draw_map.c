@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define SPAWNPOINT_SIZE 24.0f
+#define DEBUG_LINE_WIDTH 3.0f
 
 Vector2 mapToScreen(Vector2 point, const ArenaMap *map, int width, int height) {
   float scaleX = (float)width / (float)map->width;
@@ -14,15 +15,14 @@ Vector2 mapToScreen(Vector2 point, const ArenaMap *map, int width, int height) {
 }
 
 static void drawQuad(const MapQuad *quad, const ArenaMap *map, int width,
-                     int height, bool debugOverlay) {
+                     int height) {
   Vector2 points[4];
   for (int i = 0; i < 4; i++) {
     points[i] = mapToScreen(quad->points[i], map, width, height);
   }
 
-  Color fill = quad->collidable
-                   ? (Color){62, 140, 222, debugOverlay ? 80 : 230}
-                   : (Color){190, 190, 190, debugOverlay ? 45 : 90};
+  Color fill = quad->collidable ? (Color){62, 140, 222, 230}
+                                : (Color){190, 190, 190, 90};
   Color outline = quad->collidable ? (Color){20, 65, 130, 255}
                                    : (Color){105, 105, 105, 180};
   DrawTriangle(points[0], points[1], points[2], fill);
@@ -30,18 +30,22 @@ static void drawQuad(const MapQuad *quad, const ArenaMap *map, int width,
   for (int i = 0; i < 4; i++) {
     DrawLineEx(points[i], points[(i + 1) % 4], 3.0f, outline);
   }
+}
 
-  if (debugOverlay && quad->id[0] != '\0') {
-    Vector2 center = {0};
-    for (int i = 0; i < 4; i++) {
-      center.x += points[i].x * 0.25f;
-      center.y += points[i].y * 0.25f;
-    }
-    int labelWidth = MeasureText(quad->id, 16);
-    DrawRectangle((int)center.x - labelWidth / 2 - 4, (int)center.y - 10,
-                  labelWidth + 8, 20, (Color){0, 0, 0, 190});
-    DrawText(quad->id, (int)center.x - labelWidth / 2, (int)center.y - 8, 16,
-             quad->collidable ? SKYBLUE : LIGHTGRAY);
+static void drawQuadHitbox(const MapQuad *quad, const ArenaMap *map, int width,
+                           int height) {
+  Vector2 points[4];
+  for (int i = 0; i < 4; i++) {
+    points[i] = mapToScreen(quad->points[i], map, width, height);
+  }
+
+  Color color = quad->collidable ? BLUE : GRAY;
+  Color fill = color;
+  fill.a = quad->collidable ? 80 : 45;
+  DrawTriangle(points[0], points[1], points[2], fill);
+  DrawTriangle(points[0], points[2], points[3], fill);
+  for (int i = 0; i < 4; i++) {
+    DrawLineEx(points[i], points[(i + 1) % 4], DEBUG_LINE_WIDTH, color);
   }
 }
 
@@ -78,15 +82,25 @@ static bool drawMapBackground(const ArenaMap *map, const MapRenderer *renderer,
 }
 
 void drawArena(const ArenaMap *map, const MapRenderer *renderer, int width,
-               int height, bool showDebugBoxes) {
+               int height) {
   bool hasBackground = drawMapBackground(map, renderer, width, height);
 
-  if (!hasBackground || showDebugBoxes) {
+  if (!hasBackground) {
     for (int i = 0; i < map->quadCount; i++) {
-      drawQuad(&map->quads[i], map, width, height, hasBackground);
+      drawQuad(&map->quads[i], map, width, height);
     }
     for (int i = 0; i < map->spawnpointCount; i++) {
       drawSpawnPoint(map->spawnpoints[i], map, width, height);
     }
+  }
+}
+
+void drawMapHitboxes(const ArenaMap *map, int width, int height) {
+  for (int i = 0; i < map->quadCount; i++) {
+    drawQuadHitbox(&map->quads[i], map, width, height);
+  }
+
+  for (int i = 0; i < map->spawnpointCount; i++) {
+    drawSpawnPoint(map->spawnpoints[i], map, width, height);
   }
 }

@@ -17,6 +17,7 @@ typedef struct Hit {
   Vector2 velocity;
   Vector2 knockback;
   float lifetime;
+  bool resolved;
 } Hit;
 
 struct GameState;
@@ -24,5 +25,6 @@ struct GameState;
 bool addHit(struct GameState *game, Hit hit);
 void clearHits(struct GameState *game);
 void updateHits(struct GameState *game, float dt);
+void createBodyHit(struct GameState *game, int attackerIndex);
 
 #endif

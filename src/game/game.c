@@ -7,7 +7,7 @@
 void updateGame(GameState *game, const InputState *input, float dt) {
   game->ui.pointer = input->pointer;
   if (input->debugTogglePressed) {
-    game->debugMapBoxes = !game->debugMapBoxes;
+    game->debugMode = !game->debugMode;
   }
 
   switch (game->screen) {

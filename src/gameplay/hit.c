@@ -3,6 +3,10 @@
 #include "../game/game_state.h"
 
 #define PLAYER_HURT_DURATION 0.28f
+#define BODY_HIT_DAMAGE 10
+#define BODY_HIT_OFFSET 60.0f
+#define BODY_KNOCKBACK_HORIZONTAL 620.0f
+#define BODY_KNOCKBACK_VERTICAL 420.0f
 
 static Rectangle playerBounds(const Player *player) {
   return (Rectangle){
@@ -52,6 +56,25 @@ bool addHit(GameState *game, Hit hit) {
   return true;
 }
 
+void createBodyHit(GameState *game, int attackerIndex) {
+  const Player *attacker = &game->players[attackerIndex];
+  float direction = attacker->facingLeft ? -1.0f : 1.0f;
+
+  addHit(game, (Hit){
+                   .attackerIndex = attackerIndex,
+                   .type = BODY,
+                   .damage = BODY_HIT_DAMAGE,
+                   .position = {
+                       attacker->position.x + direction * BODY_HIT_OFFSET,
+                       attacker->position.y,
+                   },
+                   .knockback = {
+                       direction * BODY_KNOCKBACK_HORIZONTAL,
+                       -BODY_KNOCKBACK_VERTICAL,
+                   },
+               });
+}
+
 void clearHits(GameState *game) {
   if (!game) {
     return;
@@ -71,14 +94,25 @@ void updateHits(GameState *game, float dt) {
   while (i < game->hitCount) {
     Hit *hit = &game->hits[i];
 
+    if (hit->type == BODY) {
+      if (hit->resolved) {
+        removeHit(game, i);
+        continue;
+      }
+
+      hitPlayer(game, hit);
+      hit->resolved = true;
+      i++;
+      continue;
+    }
+
     if (hit->type == PROJECTILE) {
       hit->position.x += hit->velocity.x * dt;
       hit->position.y += hit->velocity.y * dt;
       hit->lifetime -= dt;
     }
 
-    bool finished = hitPlayer(game, hit) || hit->type == BODY ||
-                    hit->lifetime <= 0.0f;
+    bool finished = hitPlayer(game, hit) || hit->lifetime <= 0.0f;
     if (finished) {
       removeHit(game, i);
     } else {

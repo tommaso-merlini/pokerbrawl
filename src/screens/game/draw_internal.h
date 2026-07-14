@@ -8,9 +8,12 @@
 
 Vector2 mapToScreen(Vector2 point, const ArenaMap *map, int width, int height);
 void drawArena(const ArenaMap *map, const MapRenderer *renderer, int width,
-               int height, bool showDebugBoxes);
+               int height);
+void drawMapHitboxes(const ArenaMap *map, int width, int height);
 void drawPlayers(const GameState *game, const PlayerRenderer *renderer,
                  int width, int height);
+void drawPlayerHitboxes(const GameState *game, int width, int height);
+void drawHitboxes(const GameState *game, int width, int height);
 void drawGameLabels(const GameState *game);
 
 #endif
