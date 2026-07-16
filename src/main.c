@@ -18,9 +18,9 @@ int main(void) {
   initMapRenderer(&mapRenderer);
 
   int monitor = GetCurrentMonitor();
-  SetWindowSize(1920 * 2, 1080 * 2);
-  // SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
-  // ToggleFullscreen();
+  // SetWindowSize(1920 * 2, 1080 * 2);
+  SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
+  ToggleFullscreen();
 
   SetTargetFPS(60);
 
