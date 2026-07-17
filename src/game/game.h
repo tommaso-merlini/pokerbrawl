@@ -7,7 +7,8 @@
 #include "../screens/game/player_renderer.h"
 #include "game_state.h"
 
-void updateGame(GameState *game, const InputState *input, float dt);
+void updateGame(GameState *game, const InputState *input,
+                const ControllerRegistry *controllers, float dt);
 void drawGame(const GameState *game, const PlayerRenderer *playerRenderer,
               const MapRenderer *mapRenderer,
               const ControllerRegistry *controllers, int screenWidth,

@@ -1,6 +1,6 @@
 #include "menu_internal.h"
 
-static int mapColumns(Rectangle content) {
+int menuMapColumns(Rectangle content) {
   if (content.width >= 760.0f) {
     return 4;
   }
@@ -8,7 +8,7 @@ static int mapColumns(Rectangle content) {
 }
 
 Rectangle menuMapCard(Rectangle content, int mapIndex) {
-  int columns = mapColumns(content);
+  int columns = menuMapColumns(content);
   float gap = 12.0f;
   float height = content.height < 190.0f ? 58.0f : 74.0f;
   float width = (content.width - (float)(columns - 1) * gap) / (float)columns;

@@ -10,7 +10,11 @@
 
 typedef enum GameMode { GAME_MODE_1V1 } GameMode;
 
-typedef enum GameScreen { SCREEN_MENU, SCREEN_GAME, SCREEN_GAME_END } GameScreen;
+typedef enum GameScreen {
+  SCREEN_MENU,
+  SCREEN_GAME,
+  SCREEN_GAME_END
+} GameScreen;
 
 typedef enum MenuStep {
   MENU_STEP_MODE,
@@ -20,6 +24,7 @@ typedef enum MenuStep {
 
 typedef struct MenuState {
   MenuStep step;
+  bool navigationTransitionHandled;
 } MenuState;
 
 typedef struct UiState {
@@ -48,6 +53,7 @@ typedef struct GameState {
 void initGameState(GameState *game);
 int getActivePlayerCount(const GameState *game);
 bool setPlayerCharacter(GameState *game, int playerIndex, int characterIndex);
+int getPlayerCharacterIndex(const GameState *game, int playerIndex);
 bool playerHasCharacter(const GameState *game, int playerIndex,
                         int characterIndex);
 void normalizeGameSelections(GameState *game);

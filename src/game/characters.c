@@ -24,8 +24,8 @@ static int findCharacterIndex(const GameState *game, const char *name) {
 }
 
 void initAvailableCharacters(GameState *game) {
-  int count = (int)(sizeof(CHARACTER_DEFINITIONS) /
-                    sizeof(CHARACTER_DEFINITIONS[0]));
+  int count =
+      (int)(sizeof(CHARACTER_DEFINITIONS) / sizeof(CHARACTER_DEFINITIONS[0]));
 
   for (int i = 0; i < count && i < MAX_CHARACTERS; i++) {
     game->availableCharacters[game->characterCount++] =
@@ -59,6 +59,14 @@ bool setPlayerCharacter(GameState *game, int playerIndex, int characterIndex) {
   return true;
 }
 
+int getPlayerCharacterIndex(const GameState *game, int playerIndex) {
+  if (playerIndex < 0 || playerIndex >= MAX_PLAYERS) {
+    return -1;
+  }
+
+  return findCharacterIndex(game, game->players[playerIndex].character.name);
+}
+
 bool playerHasCharacter(const GameState *game, int playerIndex,
                         int characterIndex) {
   if (playerIndex < 0 || playerIndex >= MAX_PLAYERS || characterIndex < 0 ||
@@ -66,8 +74,7 @@ bool playerHasCharacter(const GameState *game, int playerIndex,
     return false;
   }
 
-  return findCharacterIndex(game, game->players[playerIndex].character.name) ==
-         characterIndex;
+  return getPlayerCharacterIndex(game, playerIndex) == characterIndex;
 }
 
 void normalizeGameSelections(GameState *game) {

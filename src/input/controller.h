@@ -1,6 +1,7 @@
 #ifndef INPUT_CONTROLLER_H
 #define INPUT_CONTROLLER_H
 
+#include "../ui/navigation.h"
 #include "raylib.h"
 
 #include <stdbool.h>
@@ -37,10 +38,20 @@ typedef struct ControllerControls {
   bool buttonsReleased[CONTROLLER_BUTTON_COUNT];
 } ControllerControls;
 
+typedef struct ControllerNavigation {
+  bool upPressed;
+  bool rightPressed;
+  bool downPressed;
+  bool leftPressed;
+  bool confirmPressed;
+  bool backPressed;
+} ControllerNavigation;
+
 typedef struct Controller {
   int id;
   char name[CONTROLLER_NAME_CAPACITY];
   ControllerControls controls;
+  ControllerNavigation navigation;
 } Controller;
 
 typedef struct ControllerRegistry {
@@ -50,6 +61,8 @@ typedef struct ControllerRegistry {
 
 void initControllerRegistry(ControllerRegistry *registry);
 void updateControllerRegistry(ControllerRegistry *registry);
+void controllerRegistrySendNavigation(const ControllerRegistry *registry,
+                                      const UiNavigationTarget *target);
 
 const Controller *getController(const ControllerRegistry *registry,
                                 int controllerIndex);

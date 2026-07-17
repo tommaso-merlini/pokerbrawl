@@ -35,6 +35,10 @@ InputState readInput(void) {
   input.primaryPressed = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
   input.backPressed = IsKeyPressed(KEY_ESCAPE);
   input.confirmPressed = IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER);
+  input.navigateUpPressed = IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W);
+  input.navigateRightPressed = IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D);
+  input.navigateDownPressed = IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S);
+  input.navigateLeftPressed = IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A);
   input.debugTogglePressed = IsKeyPressed(KEY_F3);
   return input;
 }

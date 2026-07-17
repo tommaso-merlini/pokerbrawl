@@ -86,7 +86,7 @@ void menuDrawControllers(const ControllerRegistry *controllers,
     Rectangle label = {row.x + 18.0f, row.y, row.width - 18.0f, row.height};
     char text[CONTROLLER_NAME_CAPACITY + 16];
 
-    snprintf(text, sizeof(text), "%d.  %s", i + 1,
+    snprintf(text, sizeof(text), "P%d  %s", i + 1,
              controllers->controllers[i].name);
     if (i > 0) {
       DrawLine((int)row.x, (int)row.y, (int)(row.x + row.width), (int)row.y,

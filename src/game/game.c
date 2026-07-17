@@ -4,7 +4,8 @@
 #include "../screens/game_end/game_end.h"
 #include "../screens/menu/menu.h"
 
-void updateGame(GameState *game, const InputState *input, float dt) {
+void updateGame(GameState *game, const InputState *input,
+                const ControllerRegistry *controllers, float dt) {
   game->ui.pointer = input->pointer;
   if (input->debugTogglePressed) {
     game->debugMode = !game->debugMode;
@@ -12,7 +13,7 @@ void updateGame(GameState *game, const InputState *input, float dt) {
 
   switch (game->screen) {
   case SCREEN_MENU:
-    menuScreenUpdate(game, input);
+    menuScreenUpdate(game, input, controllers);
     break;
   case SCREEN_GAME:
     gameScreenUpdate(game, input, dt);
@@ -29,7 +30,8 @@ void drawGame(const GameState *game, const PlayerRenderer *playerRenderer,
               int screenHeight) {
   switch (game->screen) {
   case SCREEN_MENU:
-    menuScreenDraw(game, controllers, screenWidth, screenHeight);
+    menuScreenDraw(game, &playerRenderer->assets, controllers, screenWidth,
+                   screenHeight);
     break;
   case SCREEN_GAME:
     gameScreenDraw(game, playerRenderer, mapRenderer, screenWidth,

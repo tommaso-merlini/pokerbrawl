@@ -33,6 +33,9 @@ static int findControllerIndex(const ControllerRegistry *registry, int id) {
 }
 
 static void pollController(Controller *controller) {
+  float previousHorizontal = controller->controls.axes[GAMEPAD_AXIS_LEFT_X];
+  float previousVertical = controller->controls.axes[GAMEPAD_AXIS_LEFT_Y];
+
   for (int axis = 0; axis < CONTROLLER_AXIS_COUNT; axis++) {
     controller->controls.axes[axis] =
         GetGamepadAxisMovement(controller->id, axis);
@@ -47,6 +50,28 @@ static void pollController(Controller *controller) {
     controller->controls.buttonsReleased[button] =
         IsGamepadButtonReleased(controller->id, raylibButton);
   }
+
+  const float axisThreshold = 0.55f;
+  float horizontal = controller->controls.axes[GAMEPAD_AXIS_LEFT_X];
+  float vertical = controller->controls.axes[GAMEPAD_AXIS_LEFT_Y];
+  controller->navigation = (ControllerNavigation){
+      .upPressed =
+          controller->controls.buttonsPressed[CONTROLLER_BUTTON_DPAD_UP] ||
+          (vertical <= -axisThreshold && previousVertical > -axisThreshold),
+      .rightPressed =
+          controller->controls.buttonsPressed[CONTROLLER_BUTTON_DPAD_RIGHT] ||
+          (horizontal >= axisThreshold && previousHorizontal < axisThreshold),
+      .downPressed =
+          controller->controls.buttonsPressed[CONTROLLER_BUTTON_DPAD_DOWN] ||
+          (vertical >= axisThreshold && previousVertical < axisThreshold),
+      .leftPressed =
+          controller->controls.buttonsPressed[CONTROLLER_BUTTON_DPAD_LEFT] ||
+          (horizontal <= -axisThreshold && previousHorizontal > -axisThreshold),
+      .confirmPressed =
+          controller->controls.buttonsPressed[CONTROLLER_BUTTON_CROSS],
+      .backPressed =
+          controller->controls.buttonsPressed[CONTROLLER_BUTTON_CIRCLE],
+  };
 }
 
 static void addController(ControllerRegistry *registry, int id) {
@@ -66,8 +91,7 @@ static void addController(ControllerRegistry *registry, int id) {
 
 static void removeController(ControllerRegistry *registry, int index) {
   TraceLog(LOG_INFO, "Controller %d disconnected: %s",
-           registry->controllers[index].id,
-           registry->controllers[index].name);
+           registry->controllers[index].id, registry->controllers[index].name);
 
   for (int i = index; i < registry->count - 1; i++) {
     registry->controllers[i] = registry->controllers[i + 1];
@@ -106,4 +130,31 @@ const Controller *getController(const ControllerRegistry *registry,
   }
 
   return &registry->controllers[controllerIndex];
+}
+
+void controllerRegistrySendNavigation(const ControllerRegistry *registry,
+                                      const UiNavigationTarget *target) {
+  for (int i = 0; i < registry->count; i++) {
+    const ControllerNavigation *navigation =
+        &registry->controllers[i].navigation;
+
+    if (navigation->upPressed) {
+      uiSendNavigation(target, i, UI_NAVIGATION_UP);
+    }
+    if (navigation->rightPressed) {
+      uiSendNavigation(target, i, UI_NAVIGATION_RIGHT);
+    }
+    if (navigation->downPressed) {
+      uiSendNavigation(target, i, UI_NAVIGATION_DOWN);
+    }
+    if (navigation->leftPressed) {
+      uiSendNavigation(target, i, UI_NAVIGATION_LEFT);
+    }
+    if (navigation->confirmPressed) {
+      uiSendNavigation(target, i, UI_NAVIGATION_CONFIRM);
+    }
+    if (navigation->backPressed) {
+      uiSendNavigation(target, i, UI_NAVIGATION_BACK);
+    }
+  }
 }

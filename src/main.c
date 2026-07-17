@@ -31,7 +31,7 @@ int main(void) {
     updateControllerRegistry(&controllers);
     InputState input = readInput();
     float dt = GetFrameTime();
-    updateGame(&game, &input, dt);
+    updateGame(&game, &input, &controllers, dt);
     updatePlayerRenderer(&playerRenderer, &game, dt);
     updateMapRenderer(&mapRenderer, &game.currentMap);
 

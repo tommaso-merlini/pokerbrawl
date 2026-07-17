@@ -18,6 +18,10 @@ typedef struct InputState {
   bool primaryPressed;
   bool backPressed;
   bool confirmPressed;
+  bool navigateUpPressed;
+  bool navigateRightPressed;
+  bool navigateDownPressed;
+  bool navigateLeftPressed;
   bool debugTogglePressed;
 } InputState;
 
