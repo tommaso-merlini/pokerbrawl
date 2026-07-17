@@ -1,4 +1,5 @@
 #include "game/game.h"
+#include "input/controller.h"
 #include "input/input.h"
 #include "raylib.h"
 
@@ -16,6 +17,8 @@ int main(void) {
   }
   MapRenderer mapRenderer;
   initMapRenderer(&mapRenderer);
+  ControllerRegistry controllers;
+  initControllerRegistry(&controllers);
 
   int monitor = GetCurrentMonitor();
   // SetWindowSize(1920 * 2, 1080 * 2);
@@ -25,6 +28,7 @@ int main(void) {
   SetTargetFPS(60);
 
   while (!WindowShouldClose()) {
+    updateControllerRegistry(&controllers);
     InputState input = readInput();
     float dt = GetFrameTime();
     updateGame(&game, &input, dt);
