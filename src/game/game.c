@@ -16,7 +16,7 @@ void updateGame(GameState *game, const InputState *input,
     menuScreenUpdate(game, input, controllers);
     break;
   case SCREEN_GAME:
-    gameScreenUpdate(game, input, dt);
+    gameScreenUpdate(game, input, controllers, dt);
     break;
   case SCREEN_GAME_END:
     gameEndScreenUpdate(game, input);

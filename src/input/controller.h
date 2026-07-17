@@ -1,6 +1,7 @@
 #ifndef INPUT_CONTROLLER_H
 #define INPUT_CONTROLLER_H
 
+#include "../gameplay/player_commands.h"
 #include "../ui/navigation.h"
 #include "raylib.h"
 
@@ -63,6 +64,8 @@ void initControllerRegistry(ControllerRegistry *registry);
 void updateControllerRegistry(ControllerRegistry *registry);
 void controllerRegistrySendNavigation(const ControllerRegistry *registry,
                                       const UiNavigationTarget *target);
+void controllerRegistrySendPlayerCommands(const ControllerRegistry *registry,
+                                          const PlayerCommandTarget *target);
 
 const Controller *getController(const ControllerRegistry *registry,
                                 int controllerIndex);

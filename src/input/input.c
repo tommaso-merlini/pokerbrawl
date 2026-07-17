@@ -4,7 +4,7 @@ typedef struct PlayerControls {
   int leftKey;
   int rightKey;
   int jumpKey;
-  int attackKey;
+  int hitKey;
 } PlayerControls;
 
 static const PlayerControls PLAYER_CONTROLS[MAX_PLAYERS] = {
@@ -20,7 +20,7 @@ static PlayerInput readPlayerInput(PlayerControls controls) {
   input.move = (IsKeyDown(controls.rightKey) ? 1.0f : 0.0f) -
                (IsKeyDown(controls.leftKey) ? 1.0f : 0.0f);
   input.jumpPressed = IsKeyPressed(controls.jumpKey);
-  input.attackPressed = IsKeyPressed(controls.attackKey);
+  input.hitPressed = IsKeyPressed(controls.hitKey);
   return input;
 }
 
@@ -41,6 +41,24 @@ InputState readInput(void) {
   input.navigateLeftPressed = IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A);
   input.debugTogglePressed = IsKeyPressed(KEY_F3);
   return input;
+}
+
+void inputSendPlayerCommands(const InputState *input,
+                             const PlayerCommandTarget *target) {
+  for (int i = 0; i < MAX_PLAYERS; i++) {
+    const PlayerInput *player = &input->players[i];
+    if (player->move < 0.0f) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_MOVE_LEFT, -player->move);
+    } else if (player->move > 0.0f) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_MOVE_RIGHT, player->move);
+    }
+    if (player->jumpPressed) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_JUMP, 1.0f);
+    }
+    if (player->hitPressed) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_HIT, 1.0f);
+    }
+  }
 }
 
 bool inputClicked(const InputState *input, Rectangle bounds) {

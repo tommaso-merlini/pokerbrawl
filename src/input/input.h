@@ -2,6 +2,7 @@
 #define INPUT_INPUT_H
 
 #include "../game/constants.h"
+#include "../gameplay/player_commands.h"
 #include "raylib.h"
 
 #include <stdbool.h>
@@ -9,7 +10,7 @@
 typedef struct PlayerInput {
   float move;
   bool jumpPressed;
-  bool attackPressed;
+  bool hitPressed;
 } PlayerInput;
 
 typedef struct InputState {
@@ -26,6 +27,8 @@ typedef struct InputState {
 } InputState;
 
 InputState readInput(void);
+void inputSendPlayerCommands(const InputState *input,
+                             const PlayerCommandTarget *target);
 bool inputClicked(const InputState *input, Rectangle bounds);
 
 #endif

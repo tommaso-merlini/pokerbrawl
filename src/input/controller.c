@@ -1,5 +1,6 @@
 #include "controller.h"
 
+#include <math.h>
 #include <stdio.h>
 
 static const int RAYLIB_BUTTONS[CONTROLLER_BUTTON_COUNT] = {
@@ -155,6 +156,38 @@ void controllerRegistrySendNavigation(const ControllerRegistry *registry,
     }
     if (navigation->backPressed) {
       uiSendNavigation(target, i, UI_NAVIGATION_BACK);
+    }
+  }
+}
+
+static float controllerMovement(const Controller *controller) {
+  bool left = controller->controls.buttonsDown[CONTROLLER_BUTTON_DPAD_LEFT];
+  bool right = controller->controls.buttonsDown[CONTROLLER_BUTTON_DPAD_RIGHT];
+  if (left || right) {
+    return (right ? 1.0f : 0.0f) - (left ? 1.0f : 0.0f);
+  }
+
+  float movement = controller->controls.axes[GAMEPAD_AXIS_LEFT_X];
+  const float deadzone = 0.18f;
+  return fabsf(movement) >= deadzone ? movement : 0.0f;
+}
+
+void controllerRegistrySendPlayerCommands(const ControllerRegistry *registry,
+                                          const PlayerCommandTarget *target) {
+  for (int i = 0; i < registry->count; i++) {
+    const Controller *controller = &registry->controllers[i];
+    float movement = controllerMovement(controller);
+
+    if (movement < 0.0f) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_MOVE_LEFT, -movement);
+    } else if (movement > 0.0f) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_MOVE_RIGHT, movement);
+    }
+    if (controller->controls.buttonsPressed[CONTROLLER_BUTTON_CROSS]) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_JUMP, 1.0f);
+    }
+    if (controller->controls.buttonsPressed[CONTROLLER_BUTTON_SQUARE]) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_HIT, 1.0f);
     }
   }
 }
