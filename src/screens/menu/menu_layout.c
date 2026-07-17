@@ -14,15 +14,25 @@ static float panelSize(float available, float margin, float maximum,
 }
 
 MenuLayout menuGetLayout(int screenWidth, int screenHeight) {
-  float width =
-      panelSize((float)screenWidth, 80.0f, 900.0f, 520.0f, 32.0f, 300.0f);
+  float railWidth = (float)screenWidth * 0.2f;
+  if (railWidth < 190.0f) {
+    railWidth = 190.0f;
+  }
+  if (railWidth > 260.0f) {
+    railWidth = 260.0f;
+  }
+
+  float menuAreaWidth = (float)screenWidth - railWidth - 20.0f;
+  float width = panelSize(menuAreaWidth, 80.0f, 900.0f, 520.0f, 32.0f, 300.0f);
   float height =
       panelSize((float)screenHeight, 90.0f, 680.0f, 340.0f, 32.0f, 260.0f);
   MenuLayout layout = {0};
 
   layout.menuWindow =
-      (Rectangle){(float)screenWidth * 0.5f - width * 0.5f,
+      (Rectangle){menuAreaWidth * 0.5f - width * 0.5f,
                   (float)screenHeight * 0.5f - height * 0.5f, width, height};
+  layout.controllerRail = (Rectangle){(float)screenWidth - railWidth, 0.0f,
+                                      railWidth, (float)screenHeight};
 
   float buttonWidth = (width - 104.0f) * 0.5f;
   buttonWidth = buttonWidth > 150.0f ? 150.0f : buttonWidth;

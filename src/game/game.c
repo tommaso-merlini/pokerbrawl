@@ -24,11 +24,12 @@ void updateGame(GameState *game, const InputState *input, float dt) {
 }
 
 void drawGame(const GameState *game, const PlayerRenderer *playerRenderer,
-              const MapRenderer *mapRenderer, int screenWidth,
+              const MapRenderer *mapRenderer,
+              const ControllerRegistry *controllers, int screenWidth,
               int screenHeight) {
   switch (game->screen) {
   case SCREEN_MENU:
-    menuScreenDraw(game, screenWidth, screenHeight);
+    menuScreenDraw(game, controllers, screenWidth, screenHeight);
     break;
   case SCREEN_GAME:
     gameScreenDraw(game, playerRenderer, mapRenderer, screenWidth,

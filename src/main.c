@@ -36,8 +36,8 @@ int main(void) {
     updateMapRenderer(&mapRenderer, &game.currentMap);
 
     BeginDrawing();
-    drawGame(&game, &playerRenderer, &mapRenderer, GetScreenWidth(),
-             GetScreenHeight());
+    drawGame(&game, &playerRenderer, &mapRenderer, &controllers,
+             GetScreenWidth(), GetScreenHeight());
     EndDrawing();
   }
 

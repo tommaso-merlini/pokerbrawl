@@ -2,6 +2,7 @@
 #define SCREENS_MENU_MENU_INTERNAL_H
 
 #include "../../game/game_state.h"
+#include "../../input/controller.h"
 #include "../../input/input.h"
 #include "../../ui/ui.h"
 #include "raylib.h"
@@ -11,6 +12,7 @@ typedef struct MenuLayout {
   Rectangle content;
   Rectangle backButton;
   Rectangle nextButton;
+  Rectangle controllerRail;
 } MenuLayout;
 
 MenuLayout menuGetLayout(int currentWidth, int currentHeight);
@@ -25,6 +27,8 @@ bool menuCanAdvance(const GameState *game);
 void menuAdvance(GameState *game);
 void menuPrevious(GameState *game);
 void menuDrawFrame(const GameState *game, MenuLayout layout);
+void menuDrawControllers(const ControllerRegistry *controllers,
+                         MenuLayout layout);
 
 void menuModeUpdate(GameState *game, const InputState *input,
                     MenuLayout layout);

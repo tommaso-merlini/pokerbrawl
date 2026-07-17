@@ -27,9 +27,12 @@ void menuScreenUpdate(GameState *game, const InputState *input) {
   }
 }
 
-void menuScreenDraw(const GameState *game, int screenWidth, int screenHeight) {
+void menuScreenDraw(const GameState *game,
+                    const ControllerRegistry *controllers, int screenWidth,
+                    int screenHeight) {
   MenuLayout layout = menuGetLayout(screenWidth, screenHeight);
   menuDrawFrame(game, layout);
+  menuDrawControllers(controllers, layout);
 
   switch (game->menu.step) {
   case MENU_STEP_MODE:
