@@ -11,6 +11,7 @@ void initPlayer(Player *player, Vector2 spawnpoint, Character character) {
   *player = (Player){
       .character = character,
       .lives = INITIAL_PLAYER_LIVES,
+      .jumps = 0,
   };
   respawnPlayer(player, spawnpoint);
 }
@@ -50,9 +51,9 @@ void updatePlayer(Player *player, const ArenaMap *map, PlayerInput input,
 
     player->velocity.x = input.move * PLAYER_SPEED;
 
-    if (input.jumpPressed && player->onGround) {
+    if (input.jumpPressed && player->jumps < 2) {
       player->velocity.y = -PLAYER_JUMP_SPEED;
-      player->onGround = false;
+      player->jumps = player->jumps + 1;
     }
   }
 

@@ -61,6 +61,7 @@ void resolvePlayerVertical(Player *player, const ArenaMap *map) {
     if (player->velocity.y > 0.0f) {
       player->position.y = solid.y - player->size.y * 0.5f;
       player->onGround = true;
+      player->jumps = 0;
     } else if (player->velocity.y < 0.0f) {
       player->position.y = solid.y + solid.height + player->size.y * 0.5f;
     }

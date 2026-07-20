@@ -19,6 +19,7 @@ typedef struct Player {
   bool facingLeft;
   bool onGround;
   bool spawned;
+  int jumps;
 } Player;
 
 void initPlayer(Player *player, Vector2 spawnpoint, Character character);
