@@ -3,11 +3,11 @@
 
 #include "../../game/game_state.h"
 #include "../../input/controller.h"
-#include "../../input/input.h"
+#include "../../input/keyboard.h"
 #include "map_renderer.h"
 #include "player_renderer.h"
 
-void gameScreenUpdate(GameState *game, const InputState *input,
+void gameScreenUpdate(GameState *game, const KeyboardState *keyboard,
                       const ControllerRegistry *controllers, float dt);
 void gameScreenDraw(const GameState *game, const PlayerRenderer *playerRenderer,
                     const MapRenderer *mapRenderer, int screenWidth,

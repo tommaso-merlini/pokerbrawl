@@ -1,6 +1,6 @@
 #include "game/game.h"
 #include "input/controller.h"
-#include "input/input.h"
+#include "input/keyboard.h"
 #include "raylib.h"
 
 int main(void) {
@@ -29,9 +29,9 @@ int main(void) {
 
   while (!WindowShouldClose()) {
     updateControllerRegistry(&controllers);
-    InputState input = readInput();
+    KeyboardState keyboard = readKeyboard();
     float dt = GetFrameTime();
-    updateGame(&game, &input, &controllers, dt);
+    updateGame(&game, &keyboard, &controllers, dt);
     updatePlayerRenderer(&playerRenderer, &game, dt);
     updateMapRenderer(&mapRenderer, &game.currentMap);
 

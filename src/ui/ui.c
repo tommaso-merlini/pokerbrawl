@@ -38,6 +38,6 @@ void uiDrawCard(const char *text, Rectangle bounds, bool selected, bool hovered,
   uiDrawCenteredText(text, bounds, fontSize, 12, textColor);
 }
 
-bool uiWasClicked(const InputState *input, Rectangle bounds) {
-  return inputClicked(input, bounds);
+bool uiWasClicked(const KeyboardState *keyboard, Rectangle bounds) {
+  return keyboardClicked(keyboard, bounds);
 }

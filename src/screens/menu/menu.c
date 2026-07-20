@@ -2,35 +2,35 @@
 
 #include "menu_internal.h"
 
-static void sendKeyboardNavigation(const InputState *input,
+static void sendKeyboardNavigation(const KeyboardState *keyboard,
                                    const UiNavigationTarget *target) {
-  if (input->navigateUpPressed) {
+  if (keyboard->navigateUpPressed) {
     uiSendNavigation(target, 0, UI_NAVIGATION_UP);
   }
-  if (input->navigateRightPressed) {
+  if (keyboard->navigateRightPressed) {
     uiSendNavigation(target, 0, UI_NAVIGATION_RIGHT);
   }
-  if (input->navigateDownPressed) {
+  if (keyboard->navigateDownPressed) {
     uiSendNavigation(target, 0, UI_NAVIGATION_DOWN);
   }
-  if (input->navigateLeftPressed) {
+  if (keyboard->navigateLeftPressed) {
     uiSendNavigation(target, 0, UI_NAVIGATION_LEFT);
   }
-  if (input->confirmPressed) {
+  if (keyboard->confirmPressed) {
     uiSendNavigation(target, 0, UI_NAVIGATION_CONFIRM);
   }
-  if (input->backPressed) {
+  if (keyboard->backPressed) {
     uiSendNavigation(target, 0, UI_NAVIGATION_BACK);
   }
 }
 
-void menuScreenUpdate(GameState *game, const InputState *input,
+void menuScreenUpdate(GameState *game, const KeyboardState *keyboard,
                       const ControllerRegistry *controllers) {
   normalizeGameSelections(game);
   game->menu.navigationTransitionHandled = false;
   UiNavigationTarget navigation = menuScreenNavigation(game);
   controllerRegistrySendNavigation(controllers, &navigation);
-  sendKeyboardNavigation(input, &navigation);
+  sendKeyboardNavigation(keyboard, &navigation);
 
   if (game->screen != SCREEN_MENU || game->menu.navigationTransitionHandled) {
     return;
@@ -39,22 +39,22 @@ void menuScreenUpdate(GameState *game, const InputState *input,
   MenuLayout layout = menuGetLayout(GetScreenWidth(), GetScreenHeight());
 
   if (game->menu.step != MENU_STEP_MODE &&
-      uiWasClicked(input, layout.backButton)) {
+      uiWasClicked(keyboard, layout.backButton)) {
     menuPrevious(game);
   }
-  if (uiWasClicked(input, layout.nextButton)) {
+  if (uiWasClicked(keyboard, layout.nextButton)) {
     menuAdvance(game);
   }
 
   switch (game->menu.step) {
   case MENU_STEP_MODE:
-    menuModeUpdate(game, input, layout);
+    menuModeUpdate(game, keyboard, layout);
     break;
   case MENU_STEP_CHARACTERS:
-    menuCharactersUpdate(game, input, layout);
+    menuCharactersUpdate(game, keyboard, layout);
     break;
   case MENU_STEP_MAPS:
-    menuMapsUpdate(game, input, layout);
+    menuMapsUpdate(game, keyboard, layout);
     break;
   }
 }

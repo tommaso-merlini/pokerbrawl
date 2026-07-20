@@ -1,5 +1,5 @@
-#ifndef INPUT_INPUT_H
-#define INPUT_INPUT_H
+#ifndef INPUT_KEYBOARD_H
+#define INPUT_KEYBOARD_H
 
 #include "../game/constants.h"
 #include "../gameplay/player_commands.h"
@@ -14,7 +14,7 @@ typedef struct PlayerInput {
   bool dashPressed;
 } PlayerInput;
 
-typedef struct InputState {
+typedef struct KeyboardState {
   PlayerInput players[MAX_PLAYERS];
   Vector2 pointer;
   bool primaryPressed;
@@ -25,11 +25,11 @@ typedef struct InputState {
   bool navigateDownPressed;
   bool navigateLeftPressed;
   bool debugTogglePressed;
-} InputState;
+} KeyboardState;
 
-InputState readInput(void);
-void inputSendPlayerCommands(const InputState *input,
-                             const PlayerCommandTarget *target);
-bool inputClicked(const InputState *input, Rectangle bounds);
+KeyboardState readKeyboard(void);
+void keyboardSendPlayerCommands(const KeyboardState *keyboard,
+                                const PlayerCommandTarget *target);
+bool keyboardClicked(const KeyboardState *keyboard, Rectangle bounds);
 
 #endif

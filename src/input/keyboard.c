@@ -1,4 +1,4 @@
-#include "input.h"
+#include "keyboard.h"
 
 typedef struct PlayerControls {
   int leftKey;
@@ -26,29 +26,31 @@ static PlayerInput readPlayerInput(PlayerControls controls) {
   return input;
 }
 
-InputState readInput(void) {
-  InputState input = {0};
+KeyboardState readKeyboard(void) {
+  KeyboardState keyboard = {0};
 
   for (int i = 0; i < MAX_PLAYERS; i++) {
-    input.players[i] = readPlayerInput(PLAYER_CONTROLS[i]);
+    keyboard.players[i] = readPlayerInput(PLAYER_CONTROLS[i]);
   }
 
-  input.pointer = GetMousePosition();
-  input.primaryPressed = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
-  input.backPressed = IsKeyPressed(KEY_ESCAPE);
-  input.confirmPressed = IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER);
-  input.navigateUpPressed = IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W);
-  input.navigateRightPressed = IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D);
-  input.navigateDownPressed = IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S);
-  input.navigateLeftPressed = IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A);
-  input.debugTogglePressed = IsKeyPressed(KEY_F3);
-  return input;
+  keyboard.pointer = GetMousePosition();
+  keyboard.primaryPressed = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+  keyboard.backPressed = IsKeyPressed(KEY_ESCAPE);
+  keyboard.confirmPressed =
+      IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_KP_ENTER);
+  keyboard.navigateUpPressed = IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W);
+  keyboard.navigateRightPressed =
+      IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D);
+  keyboard.navigateDownPressed = IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S);
+  keyboard.navigateLeftPressed = IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A);
+  keyboard.debugTogglePressed = IsKeyPressed(KEY_F3);
+  return keyboard;
 }
 
-void inputSendPlayerCommands(const InputState *input,
-                             const PlayerCommandTarget *target) {
+void keyboardSendPlayerCommands(const KeyboardState *keyboard,
+                                 const PlayerCommandTarget *target) {
   for (int i = 0; i < MAX_PLAYERS; i++) {
-    const PlayerInput *player = &input->players[i];
+    const PlayerInput *player = &keyboard->players[i];
     if (player->move < 0.0f) {
       sendPlayerCommand(target, i, PLAYER_COMMAND_MOVE_LEFT, -player->move);
     } else if (player->move > 0.0f) {
@@ -66,7 +68,7 @@ void inputSendPlayerCommands(const InputState *input,
   }
 }
 
-bool inputClicked(const InputState *input, Rectangle bounds) {
-  return input->primaryPressed &&
-         CheckCollisionPointRec(input->pointer, bounds);
+bool keyboardClicked(const KeyboardState *keyboard, Rectangle bounds) {
+  return keyboard->primaryPressed &&
+         CheckCollisionPointRec(keyboard->pointer, bounds);
 }

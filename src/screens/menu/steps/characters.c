@@ -89,7 +89,7 @@ static void drawCharacterCard(const GameState *game,
   }
 }
 
-void menuCharactersUpdate(GameState *game, const InputState *input,
+void menuCharactersUpdate(GameState *game, const KeyboardState *keyboard,
                           MenuLayout layout) {
   if (game->characterCount <= 0) {
     return;
@@ -97,7 +97,7 @@ void menuCharactersUpdate(GameState *game, const InputState *input,
 
   for (int i = 0; i < game->characterCount; i++) {
     Rectangle card = menuCharacterCard(layout.content, i, game->characterCount);
-    if (uiWasClicked(input, card)) {
+    if (uiWasClicked(keyboard, card)) {
       // Mouse and keyboard own P1; each connected gamepad owns the player with
       // the same connection-order index.
       setPlayerCharacter(game, 0, i);

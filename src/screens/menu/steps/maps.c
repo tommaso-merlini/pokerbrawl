@@ -2,13 +2,13 @@
 
 #include "../../../ui/ui.h"
 
-void menuMapsUpdate(GameState *game, const InputState *input,
+void menuMapsUpdate(GameState *game, const KeyboardState *keyboard,
                     MenuLayout layout) {
   for (int i = 0; i < game->availableMaps.count; i++) {
     Rectangle card = menuMapCard(layout.content, i);
 
-    if (CheckCollisionPointRec(input->pointer, layout.content) &&
-        uiWasClicked(input, card)) {
+    if (CheckCollisionPointRec(keyboard->pointer, layout.content) &&
+        uiWasClicked(keyboard, card)) {
       game->selectedMapIndex = i;
     }
   }

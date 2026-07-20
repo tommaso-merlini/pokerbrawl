@@ -3,7 +3,7 @@
 
 #include "../character.h"
 #include "../game/constants.h"
-#include "../input/input.h"
+#include "../input/keyboard.h"
 #include "../maps/map.h"
 
 #include <stdbool.h>

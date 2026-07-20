@@ -4,22 +4,22 @@
 #include "../screens/game_end/game_end.h"
 #include "../screens/menu/menu.h"
 
-void updateGame(GameState *game, const InputState *input,
+void updateGame(GameState *game, const KeyboardState *keyboard,
                 const ControllerRegistry *controllers, float dt) {
-  game->ui.pointer = input->pointer;
-  if (input->debugTogglePressed) {
+  game->ui.pointer = keyboard->pointer;
+  if (keyboard->debugTogglePressed) {
     game->debugMode = !game->debugMode;
   }
 
   switch (game->screen) {
   case SCREEN_MENU:
-    menuScreenUpdate(game, input, controllers);
+    menuScreenUpdate(game, keyboard, controllers);
     break;
   case SCREEN_GAME:
-    gameScreenUpdate(game, input, controllers, dt);
+    gameScreenUpdate(game, keyboard, controllers, dt);
     break;
   case SCREEN_GAME_END:
-    gameEndScreenUpdate(game, input);
+    gameEndScreenUpdate(game, keyboard);
     break;
   }
 }

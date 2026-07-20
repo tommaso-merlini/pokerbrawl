@@ -36,10 +36,10 @@ static GameEndLayout gameEndLayout(int screenWidth, int screenHeight) {
   };
 }
 
-void gameEndScreenUpdate(GameState *game, const InputState *input) {
+void gameEndScreenUpdate(GameState *game, const KeyboardState *keyboard) {
   GameEndLayout layout = gameEndLayout(GetScreenWidth(), GetScreenHeight());
-  if (input->confirmPressed || input->backPressed ||
-      uiWasClicked(input, layout.button)) {
+  if (keyboard->confirmPressed || keyboard->backPressed ||
+      uiWasClicked(keyboard, layout.button)) {
     returnToMenu(game);
   }
 }

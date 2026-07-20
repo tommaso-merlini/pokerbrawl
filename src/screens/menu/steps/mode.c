@@ -11,11 +11,11 @@ static const char *modeLabel(GameMode mode) {
   return "";
 }
 
-void menuModeUpdate(GameState *game, const InputState *input,
+void menuModeUpdate(GameState *game, const KeyboardState *keyboard,
                     MenuLayout layout) {
   Rectangle card = menuModeCard(layout.content);
 
-  if (uiWasClicked(input, card)) {
+  if (uiWasClicked(keyboard, card)) {
     game->selectedMode = GAME_MODE_1V1;
   }
 }

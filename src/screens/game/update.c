@@ -51,7 +51,7 @@ static PlayerCommandTarget playerInputTarget(PlayerInputCollector *collector) {
   };
 }
 
-void gameScreenUpdate(GameState *game, const InputState *input,
+void gameScreenUpdate(GameState *game, const KeyboardState *keyboard,
                       const ControllerRegistry *controllers, float dt) {
   if (!game->currentMap.loaded) {
     return;
@@ -59,7 +59,7 @@ void gameScreenUpdate(GameState *game, const InputState *input,
 
   PlayerInputCollector collector = {0};
   PlayerCommandTarget commands = playerInputTarget(&collector);
-  inputSendPlayerCommands(input, &commands);
+  keyboardSendPlayerCommands(keyboard, &commands);
   controllerRegistrySendPlayerCommands(controllers, &commands);
 
   for (int i = 0; i < game->playerCount && i < MAX_PLAYERS; i++) {
