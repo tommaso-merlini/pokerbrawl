@@ -11,6 +11,7 @@ typedef struct PlayerInput {
   float move;
   bool jumpPressed;
   bool hitPressed;
+  bool dashPressed;
 } PlayerInput;
 
 typedef struct InputState {

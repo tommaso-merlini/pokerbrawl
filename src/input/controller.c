@@ -189,5 +189,8 @@ void controllerRegistrySendPlayerCommands(const ControllerRegistry *registry,
     if (controller->controls.buttonsPressed[CONTROLLER_BUTTON_SQUARE]) {
       sendPlayerCommand(target, i, PLAYER_COMMAND_HIT, 1.0f);
     }
+    if (controller->controls.buttonsPressed[CONTROLLER_BUTTON_TRIANGLE]) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_DASH, 1.0f);
+    }
   }
 }

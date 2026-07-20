@@ -15,6 +15,9 @@ typedef struct Player {
   int healthPoints;
   int lives;
   float hurtTimer;
+  float dashTimer;
+  float dashCooldownTimer;
+  float dashDirection;
   Character character;
   bool facingLeft;
   bool onGround;

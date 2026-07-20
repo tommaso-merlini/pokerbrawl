@@ -31,6 +31,7 @@ static bool hitPlayer(GameState *game, const Hit *hit) {
     player->healthPoints -= hit->damage;
     player->velocity = hit->knockback;
     player->hurtTimer = PLAYER_HURT_DURATION;
+    player->dashTimer = 0.0f;
     player->onGround = false;
     if (player->healthPoints < 0) {
       player->healthPoints = 0;

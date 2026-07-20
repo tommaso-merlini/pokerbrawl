@@ -5,13 +5,14 @@ typedef struct PlayerControls {
   int rightKey;
   int jumpKey;
   int hitKey;
+  int dashKey;
 } PlayerControls;
 
 static const PlayerControls PLAYER_CONTROLS[MAX_PLAYERS] = {
-    {KEY_A, KEY_D, KEY_W, KEY_SPACE},
-    {KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_RIGHT_CONTROL},
-    {KEY_J, KEY_L, KEY_I, KEY_K},
-    {KEY_F, KEY_H, KEY_T, KEY_G},
+    {KEY_A, KEY_D, KEY_W, KEY_SPACE, KEY_LEFT_SHIFT},
+    {KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_RIGHT_CONTROL, KEY_RIGHT_SHIFT},
+    {KEY_J, KEY_L, KEY_I, KEY_K, KEY_O},
+    {KEY_F, KEY_H, KEY_T, KEY_G, KEY_Y},
 };
 
 static PlayerInput readPlayerInput(PlayerControls controls) {
@@ -21,6 +22,7 @@ static PlayerInput readPlayerInput(PlayerControls controls) {
                (IsKeyDown(controls.leftKey) ? 1.0f : 0.0f);
   input.jumpPressed = IsKeyPressed(controls.jumpKey);
   input.hitPressed = IsKeyPressed(controls.hitKey);
+  input.dashPressed = IsKeyPressed(controls.dashKey);
   return input;
 }
 
@@ -57,6 +59,9 @@ void inputSendPlayerCommands(const InputState *input,
     }
     if (player->hitPressed) {
       sendPlayerCommand(target, i, PLAYER_COMMAND_HIT, 1.0f);
+    }
+    if (player->dashPressed) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_DASH, 1.0f);
     }
   }
 }

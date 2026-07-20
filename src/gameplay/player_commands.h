@@ -7,7 +7,8 @@ typedef enum PlayerCommand {
   PLAYER_COMMAND_MOVE_LEFT,
   PLAYER_COMMAND_MOVE_RIGHT,
   PLAYER_COMMAND_JUMP,
-  PLAYER_COMMAND_HIT
+  PLAYER_COMMAND_HIT,
+  PLAYER_COMMAND_DASH
 } PlayerCommand;
 
 // Input devices only send commands through this interface. The gameplay

@@ -44,6 +44,7 @@ void resolvePlayerHorizontal(Player *player, const ArenaMap *map) {
     }
 
     player->velocity.x = 0.0f;
+    player->dashTimer = 0.0f;
     playerRect = rectangleFromCenter(player->position, player->size);
   }
 }

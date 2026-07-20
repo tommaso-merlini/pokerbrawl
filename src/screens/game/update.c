@@ -38,6 +38,9 @@ static void collectPlayerCommand(void *context, int playerIndex,
   case PLAYER_COMMAND_HIT:
     input->hitPressed = true;
     break;
+  case PLAYER_COMMAND_DASH:
+    input->dashPressed = true;
+    break;
   }
 }
 
