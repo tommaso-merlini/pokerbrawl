@@ -12,7 +12,7 @@ typedef enum HitType { BODY, PROJECTILE } HitType;
 typedef struct Hit {
   int attackerIndex;
   HitType type;
-  int damage;
+  int knockbackIncrease;
   Vector2 position;
   Vector2 velocity;
   Vector2 knockback;

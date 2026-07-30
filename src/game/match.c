@@ -26,27 +26,23 @@ static Vector2 randomSpawnPoint(const ArenaMap *map, int playerIndex,
   return fallbackSpawnPoint(map, playerIndex, playerCount);
 }
 
-static bool playerOutsideArena(const Player *player, const ArenaMap *map) {
-  Vector2 half = {player->size.x * 0.5f, player->size.y * 0.5f};
-  return player->position.x + half.x < 0.0f ||
-         player->position.x - half.x > (float)map->width ||
-         player->position.y + half.y < 0.0f ||
-         player->position.y - half.y > (float)map->height;
+static bool playerTouchesArenaBottom(const Player *player,
+                                     const ArenaMap *map) {
+  float playerBottom = player->position.y + player->size.y * 0.5f;
+  return playerBottom >= (float)map->height;
 }
 
 void handlePlayerDeaths(GameState *game) {
   for (int i = 0; i < game->playerCount && i < MAX_PLAYERS; i++) {
     Player *player = &game->players[i];
     if (!player->spawned ||
-        (player->healthPoints > 0 &&
-         !playerOutsideArena(player, &game->currentMap))) {
+        !playerTouchesArenaBottom(player, &game->currentMap)) {
       continue;
     }
 
     player->lives--;
     if (player->lives <= 0) {
       player->lives = 0;
-      player->healthPoints = 0;
       player->velocity = (Vector2){0};
       player->spawned = false;
       continue;

@@ -12,7 +12,7 @@ typedef struct Player {
   Vector2 position;
   Vector2 velocity;
   Vector2 size;
-  int healthPoints;
+  int knockbackPercent;
   int lives;
   float hurtTimer;
   float dashTimer;

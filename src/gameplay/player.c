@@ -45,7 +45,6 @@ void respawnPlayer(Player *player, Vector2 spawnpoint) {
   *player = (Player){
       .position = spawnpoint,
       .size = {PLAYER_COLLIDER_WIDTH, PLAYER_COLLIDER_HEIGHT},
-      .healthPoints = PLAYER_MAX_HEALTH,
       .lives = lives,
       .character = character,
       .spawned = true,

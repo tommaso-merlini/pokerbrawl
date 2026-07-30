@@ -1,9 +1,10 @@
 #include "hit.h"
 
 #include "../game/game_state.h"
+#include <stdio.h>
 
 #define PLAYER_HURT_DURATION 0.28f
-#define BODY_HIT_DAMAGE 10
+#define BODY_HIT_KNOCKBACK_INCREASE 10
 #define BODY_HIT_OFFSET 60.0f
 #define BODY_KNOCKBACK_HORIZONTAL 620.0f
 #define BODY_KNOCKBACK_VERTICAL 420.0f
@@ -28,14 +29,15 @@ static bool hitPlayer(GameState *game, const Hit *hit) {
       continue;
     }
 
-    player->healthPoints -= hit->damage;
-    player->velocity = hit->knockback;
+    player->knockbackPercent += hit->knockbackIncrease;
+    float knockbackMultiplier = 1.0f + player->knockbackPercent / 100.0f;
+    player->velocity = (Vector2){
+        hit->knockback.x * knockbackMultiplier,
+        hit->knockback.y * knockbackMultiplier,
+    };
     player->hurtTimer = PLAYER_HURT_DURATION;
     player->dashTimer = 0.0f;
     player->onGround = false;
-    if (player->healthPoints < 0) {
-      player->healthPoints = 0;
-    }
     return true;
   }
 
@@ -64,7 +66,7 @@ void createBodyHit(GameState *game, int attackerIndex) {
   addHit(game, (Hit){
                    .attackerIndex = attackerIndex,
                    .type = BODY,
-                   .damage = BODY_HIT_DAMAGE,
+                   .knockbackIncrease = BODY_HIT_KNOCKBACK_INCREASE,
                    .position = {
                        attacker->position.x + direction * BODY_HIT_OFFSET,
                        attacker->position.y,
