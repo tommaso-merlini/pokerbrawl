@@ -1,37 +1,594 @@
 [
   {
-    "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c src/main.c -o src/main.o",
-    "file": "/home/tommaso/Documents/test-gioco/src/main.c"
+    "file": "src/screens/menu/steps/characters.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/menu/steps/characters.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
   },
   {
-    "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c src/game_state.c -o src/game_state.o",
-    "file": "/home/tommaso/Documents/test-gioco/src/game_state.c"
+    "file": "src/screens/menu/steps/mode.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/menu/steps/mode.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
   },
   {
-    "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c src/player.c -o src/player.o",
-    "file": "/home/tommaso/Documents/test-gioco/src/player.c"
+    "file": "src/screens/menu/steps/maps.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/menu/steps/maps.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
   },
   {
-    "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c src/screens/menu.c -o src/screens/menu.o",
-    "file": "/home/tommaso/Documents/test-gioco/src/screens/menu.c"
+    "file": "src/screens/menu/navigation.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/menu/navigation.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
   },
   {
-    "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c src/screens/game.c -o src/screens/game.o",
-    "file": "/home/tommaso/Documents/test-gioco/src/screens/game.c"
+    "file": "src/screens/menu/chrome.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/menu/chrome.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
   },
   {
-    "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c src/json_reader.c -o src/json_reader.o",
-    "file": "/home/tommaso/Documents/test-gioco/src/json_reader.c"
+    "file": "src/screens/menu/layout_maps.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/menu/layout_maps.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
   },
   {
-    "directory": "/home/tommaso/Documents/test-gioco",
-    "command": "cc -Iraylib/src -c src/map_loader.c -o src/map_loader.o",
-    "file": "/home/tommaso/Documents/test-gioco/src/map_loader.c"
+    "file": "src/screens/menu/menu_layout.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/menu/menu_layout.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/menu/layout_characters.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/menu/layout_characters.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/menu/menu.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/menu/menu.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/game/draw.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/game/draw.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/game/player_renderer.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/game/player_renderer.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/game/map_renderer.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/game/map_renderer.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/game/draw_map.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/game/draw_map.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/game/draw_players.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/game/draw_players.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/game/draw_hitboxes.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/game/draw_hitboxes.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/game/update.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/game/update.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/screens/game_end/game_end.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/screens/game_end/game_end.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/game/match.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/game/match.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/game/game_state.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/game/game_state.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/game/characters.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/game/characters.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/game/game.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/game/game.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/input/controller.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/input/controller.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/input/keyboard.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/input/keyboard.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/gameplay/player_commands.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/gameplay/player_commands.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/gameplay/collision.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/gameplay/collision.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/gameplay/player.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/gameplay/player.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/gameplay/hit.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/gameplay/hit.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/maps/json_reader.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/maps/json_reader.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/maps/json_skip.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/maps/json_skip.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/maps/json_string.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/maps/json_string.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/maps/map_document.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/maps/map_document.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/maps/map_geometry.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/maps/map_geometry.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/maps/map_loader.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/maps/map_loader.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/ui/navigation.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/ui/navigation.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/ui/ui.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/ui/ui.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/assets/player_sprite_assets.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/assets/player_sprite_assets.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
+  },
+  {
+    "file": "src/main.c",
+    "arguments": [
+      "/usr/lib64/ccache/cc",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Iraylib/src",
+      "src/main.c",
+      "-o",
+      "game"
+    ],
+    "directory": "/home/tommaso/Documents/pokerbrawl",
+    "output": "game"
   }
 ]

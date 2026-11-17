@@ -6,3 +6,8 @@ LDLIBS = raylib/build/raylib/libraylib.a -lm -ldl -lpthread -lGL -lrt -lX11
 
 game: $(SOURCES) $(HEADERS)
 	cc $(CFLAGS) $(SOURCES) -o game $(LDLIBS)
+
+clean:
+	rm -f game
+
+.PHONY: clean
