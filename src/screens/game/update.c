@@ -41,6 +41,9 @@ static void collectPlayerCommand(void *context, int playerIndex,
   case PLAYER_COMMAND_DASH:
     input->dashPressed = true;
     break;
+  case PLAYER_COMMAND_DROP:
+    input->dropPressed = true;
+    break;
   }
 }
 
@@ -53,6 +56,9 @@ static PlayerCommandTarget playerInputTarget(PlayerInputCollector *collector) {
 
 void gameScreenUpdate(GameState *game, const KeyboardState *keyboard,
                       const ControllerRegistry *controllers, float dt) {
+  if (gamePauseUpdate(game, keyboard, controllers)) {
+    return;
+  }
   if (!game->currentMap.loaded) {
     return;
   }
@@ -62,10 +68,17 @@ void gameScreenUpdate(GameState *game, const KeyboardState *keyboard,
   keyboardSendPlayerCommands(keyboard, &commands);
   controllerRegistrySendPlayerCommands(controllers, &commands);
 
+  PlayerList allPlayers = {
+      .players = game->players,
+      .count = game->playerCount < MAX_PLAYERS ? game->playerCount
+                                               : MAX_PLAYERS,
+  };
+
   for (int i = 0; i < game->playerCount && i < MAX_PLAYERS; i++) {
     if (game->players[i].spawned) {
       PlayerInput playerInput = collector.players[i];
-      updatePlayer(&game->players[i], &game->currentMap, playerInput, dt);
+      updatePlayer(&game->players[i], &game->currentMap, &allPlayers,
+                   playerInput, dt);
       if (playerInput.hitPressed && game->players[i].hurtTimer <= 0.0f) {
         createBodyHit(game, i);
       }

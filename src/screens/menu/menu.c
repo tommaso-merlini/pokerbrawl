@@ -28,6 +28,12 @@ void menuScreenUpdate(GameState *game, const KeyboardState *keyboard,
                       const ControllerRegistry *controllers) {
   normalizeGameSelections(game);
   game->menu.navigationTransitionHandled = false;
+
+  // Esc on the first menu screen quits the game (the window is fullscreen).
+  if (keyboard->backPressed && game->menu.step == MENU_STEP_MODE) {
+    game->quitRequested = true;
+    return;
+  }
   UiNavigationTarget navigation = menuScreenNavigation(game);
   controllerRegistrySendNavigation(controllers, &navigation);
   sendKeyboardNavigation(keyboard, &navigation);

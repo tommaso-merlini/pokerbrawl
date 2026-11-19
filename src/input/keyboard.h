@@ -12,6 +12,7 @@ typedef struct PlayerInput {
   bool jumpPressed;
   bool hitPressed;
   bool dashPressed;
+  bool dropPressed;
 } PlayerInput;
 
 typedef struct KeyboardState {

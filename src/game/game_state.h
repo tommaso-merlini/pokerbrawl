@@ -27,6 +27,17 @@ typedef struct MenuState {
   bool navigationTransitionHandled;
 } MenuState;
 
+typedef enum PauseOption {
+  PAUSE_OPTION_RESUME,
+  PAUSE_OPTION_MENU,
+  PAUSE_OPTION_COUNT
+} PauseOption;
+
+typedef struct PauseState {
+  bool active;
+  PauseOption selected;
+} PauseState;
+
 typedef struct UiState {
   Vector2 pointer;
 } UiState;
@@ -45,6 +56,8 @@ typedef struct GameState {
   int playerCount;
   int winnerPlayerIndex;
   bool debugMode;
+  bool quitRequested;
+  PauseState pause;
   char mapLoadError[512];
   Hit hits[MAX_HITS];
   int hitCount;

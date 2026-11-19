@@ -48,6 +48,19 @@ static bool parseQuad(JsonReader *reader, MapQuad *quad) {
       if (!jsonBool(reader, &quad->collidable)) {
         return false;
       }
+    } else if (strcmp(key, "platform") == 0) {
+      if (!jsonBool(reader, &quad->platform)) {
+        return false;
+      }
+      if (quad->platform) {
+        quad->collidable = true;
+      }
+    } else if (strcmp(key, "draw") == 0) {
+      bool draw = true;
+      if (!jsonBool(reader, &draw)) {
+        return false;
+      }
+      quad->hidden = !draw;
     } else if (strcmp(key, "points") == 0) {
       hasPoints = parseQuadPoints(reader, quad->points);
       if (!hasPoints) {

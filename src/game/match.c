@@ -100,6 +100,7 @@ bool startGameWithMap(GameState *game, int index) {
   game->selectedMapIndex = index;
   game->currentMap = game->availableMaps.maps[index];
   game->winnerPlayerIndex = -1;
+  game->pause = (PauseState){0};
   resetPlayers(game, &game->currentMap);
   game->screen = SCREEN_GAME;
   return true;

@@ -124,6 +124,16 @@ void updateControllerRegistry(ControllerRegistry *registry) {
   }
 }
 
+bool controllerRegistryPausePressed(const ControllerRegistry *registry) {
+  for (int i = 0; i < registry->count; i++) {
+    if (registry->controllers[i]
+            .controls.buttonsPressed[CONTROLLER_BUTTON_OPTIONS]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const Controller *getController(const ControllerRegistry *registry,
                                 int controllerIndex) {
   if (controllerIndex < 0 || controllerIndex >= registry->count) {
@@ -191,6 +201,10 @@ void controllerRegistrySendPlayerCommands(const ControllerRegistry *registry,
     }
     if (controller->controls.buttonsPressed[CONTROLLER_BUTTON_TRIANGLE]) {
       sendPlayerCommand(target, i, PLAYER_COMMAND_DASH, 1.0f);
+    }
+    // D-pad down or a downward flick of the left stick.
+    if (controller->navigation.downPressed) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_DROP, 1.0f);
     }
   }
 }

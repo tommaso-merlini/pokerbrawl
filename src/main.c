@@ -26,8 +26,10 @@ int main(void) {
   ToggleFullscreen();
 
   SetTargetFPS(60);
+  // Esc is used by the game (pause / back), so it must not close the window.
+  SetExitKey(KEY_NULL);
 
-  while (!WindowShouldClose()) {
+  while (!WindowShouldClose() && !game.quitRequested) {
     updateControllerRegistry(&controllers);
     KeyboardState keyboard = readKeyboard();
     float dt = GetFrameTime();

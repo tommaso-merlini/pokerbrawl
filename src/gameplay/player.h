@@ -5,6 +5,7 @@
 #include "../game/constants.h"
 #include "../input/keyboard.h"
 #include "../maps/map.h"
+#include "collision.h"
 
 #include <stdbool.h>
 
@@ -18,16 +19,18 @@ typedef struct Player {
   float dashTimer;
   float dashCooldownTimer;
   float dashDirection;
+  float dropTimer;
   Character character;
   bool facingLeft;
   bool onGround;
+  bool onPlatform;
   bool spawned;
   int jumps;
 } Player;
 
 void initPlayer(Player *player, Vector2 spawnpoint, Character character);
 void respawnPlayer(Player *player, Vector2 spawnpoint);
-void updatePlayer(Player *player, const ArenaMap *map, PlayerInput input,
-                  float dt);
+void updatePlayer(Player *player, const ArenaMap *map, const PlayerList *others,
+                  PlayerInput input, float dt);
 
 #endif

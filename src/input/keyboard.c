@@ -6,13 +6,23 @@ typedef struct PlayerControls {
   int jumpKey;
   int hitKey;
   int dashKey;
+  int dropKey;
+  int altHitKey; // tasto alternativo per colpire (0 = nessuno)
 } PlayerControls;
 
+// Sulle tastiere Mac non c'e' il Ctrl destro: si usa il Command destro.
+#ifdef __APPLE__
+#define P2_ALT_HIT_KEY KEY_RIGHT_SUPER
+#else
+#define P2_ALT_HIT_KEY 0
+#endif
+
 static const PlayerControls PLAYER_CONTROLS[MAX_PLAYERS] = {
-    {KEY_A, KEY_D, KEY_W, KEY_SPACE, KEY_LEFT_SHIFT},
-    {KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_RIGHT_CONTROL, KEY_RIGHT_SHIFT},
-    {KEY_J, KEY_L, KEY_I, KEY_K, KEY_O},
-    {KEY_F, KEY_H, KEY_T, KEY_G, KEY_Y},
+    {KEY_A, KEY_D, KEY_W, KEY_SPACE, KEY_LEFT_SHIFT, KEY_S, 0},
+    {KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_RIGHT_CONTROL, KEY_RIGHT_SHIFT,
+     KEY_DOWN, P2_ALT_HIT_KEY},
+    {KEY_J, KEY_L, KEY_I, KEY_K, KEY_O, KEY_COMMA, 0},
+    {KEY_F, KEY_H, KEY_T, KEY_G, KEY_Y, KEY_B, 0},
 };
 
 static PlayerInput readPlayerInput(PlayerControls controls) {
@@ -21,8 +31,11 @@ static PlayerInput readPlayerInput(PlayerControls controls) {
   input.move = (IsKeyDown(controls.rightKey) ? 1.0f : 0.0f) -
                (IsKeyDown(controls.leftKey) ? 1.0f : 0.0f);
   input.jumpPressed = IsKeyPressed(controls.jumpKey);
-  input.hitPressed = IsKeyPressed(controls.hitKey);
+  input.hitPressed =
+      IsKeyPressed(controls.hitKey) ||
+      (controls.altHitKey != 0 && IsKeyPressed(controls.altHitKey));
   input.dashPressed = IsKeyPressed(controls.dashKey);
+  input.dropPressed = IsKeyPressed(controls.dropKey);
   return input;
 }
 
@@ -64,6 +77,9 @@ void keyboardSendPlayerCommands(const KeyboardState *keyboard,
     }
     if (player->dashPressed) {
       sendPlayerCommand(target, i, PLAYER_COMMAND_DASH, 1.0f);
+    }
+    if (player->dropPressed) {
+      sendPlayerCommand(target, i, PLAYER_COMMAND_DROP, 1.0f);
     }
   }
 }

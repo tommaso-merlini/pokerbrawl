@@ -48,5 +48,6 @@ void initGameState(GameState *game) {
 void returnToMenu(GameState *game) {
   game->screen = SCREEN_MENU;
   game->menu.step = MENU_STEP_MODE;
+  game->pause = (PauseState){0};
   game->winnerPlayerIndex = -1;
 }

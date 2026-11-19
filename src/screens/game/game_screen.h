@@ -9,6 +9,11 @@
 
 void gameScreenUpdate(GameState *game, const KeyboardState *keyboard,
                       const ControllerRegistry *controllers, float dt);
+// Pause menu (pause.c)
+bool gamePauseUpdate(GameState *game, const KeyboardState *keyboard,
+                     const ControllerRegistry *controllers);
+void gamePauseDraw(const GameState *game, int screenWidth, int screenHeight);
+
 void gameScreenDraw(const GameState *game, const PlayerRenderer *playerRenderer,
                     const MapRenderer *mapRenderer, int screenWidth,
                     int screenHeight);

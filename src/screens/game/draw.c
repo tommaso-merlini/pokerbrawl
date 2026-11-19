@@ -24,6 +24,7 @@ void gameScreenDraw(const GameState *game, const PlayerRenderer *playerRenderer,
     drawHitboxes(game, screenWidth, screenHeight);
   }
   drawGameLabels(game);
+  gamePauseDraw(game, screenWidth, screenHeight);
 }
 
 void drawGameLabels(const GameState *game) {

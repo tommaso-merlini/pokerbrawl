@@ -25,8 +25,8 @@ static void drawQuad(const MapQuad *quad, const ArenaMap *map, int width,
                                 : (Color){190, 190, 190, 90};
   Color outline = quad->collidable ? (Color){20, 65, 130, 255}
                                    : (Color){105, 105, 105, 180};
-  DrawTriangle(points[0], points[1], points[2], fill);
-  DrawTriangle(points[0], points[2], points[3], fill);
+  DrawTriangle(points[0], points[2], points[1], fill);
+  DrawTriangle(points[0], points[3], points[2], fill);
   for (int i = 0; i < 4; i++) {
     DrawLineEx(points[i], points[(i + 1) % 4], 3.0f, outline);
   }
@@ -39,11 +39,11 @@ static void drawQuadHitbox(const MapQuad *quad, const ArenaMap *map, int width,
     points[i] = mapToScreen(quad->points[i], map, width, height);
   }
 
-  Color color = quad->collidable ? BLUE : GRAY;
+  Color color = quad->platform ? ORANGE : quad->collidable ? BLUE : GRAY;
   Color fill = color;
   fill.a = quad->collidable ? 80 : 45;
-  DrawTriangle(points[0], points[1], points[2], fill);
-  DrawTriangle(points[0], points[2], points[3], fill);
+  DrawTriangle(points[0], points[2], points[1], fill);
+  DrawTriangle(points[0], points[3], points[2], fill);
   for (int i = 0; i < 4; i++) {
     DrawLineEx(points[i], points[(i + 1) % 4], DEBUG_LINE_WIDTH, color);
   }
@@ -81,13 +81,35 @@ static bool drawMapBackground(const ArenaMap *map, const MapRenderer *renderer,
   return true;
 }
 
+static void drawPlatform(const MapQuad *quad, const ArenaMap *map, int width,
+                         int height) {
+  Vector2 points[4];
+  for (int i = 0; i < 4; i++) {
+    points[i] = mapToScreen(quad->points[i], map, width, height);
+  }
+
+  Color fill = {38, 30, 26, 215};
+  Color top = {236, 196, 120, 255};
+  DrawTriangle(points[0], points[2], points[1], fill);
+  DrawTriangle(points[0], points[3], points[2], fill);
+  DrawLineEx(points[0], points[1], 4.0f, top);
+}
+
 void drawArena(const ArenaMap *map, const MapRenderer *renderer, int width,
                int height) {
   bool hasBackground = drawMapBackground(map, renderer, width, height);
 
+  for (int i = 0; i < map->quadCount; i++) {
+    if (map->quads[i].platform && !map->quads[i].hidden) {
+      drawPlatform(&map->quads[i], map, width, height);
+    }
+  }
+
   if (!hasBackground) {
     for (int i = 0; i < map->quadCount; i++) {
-      drawQuad(&map->quads[i], map, width, height);
+      if (!map->quads[i].platform) {
+        drawQuad(&map->quads[i], map, width, height);
+      }
     }
     for (int i = 0; i < map->spawnpointCount; i++) {
       drawSpawnPoint(map->spawnpoints[i], map, width, height);

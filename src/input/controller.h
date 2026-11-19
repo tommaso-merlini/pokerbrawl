@@ -67,6 +67,8 @@ void controllerRegistrySendNavigation(const ControllerRegistry *registry,
 void controllerRegistrySendPlayerCommands(const ControllerRegistry *registry,
                                           const PlayerCommandTarget *target);
 
+bool controllerRegistryPausePressed(const ControllerRegistry *registry);
+
 const Controller *getController(const ControllerRegistry *registry,
                                 int controllerIndex);
 

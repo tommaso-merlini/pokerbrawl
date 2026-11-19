@@ -14,6 +14,8 @@ typedef struct MapQuad {
   char id[MAX_QUAD_ID];
   Vector2 points[4];
   bool collidable;
+  bool platform; // one-way: solid only from above, can drop through
+  bool hidden;   // "draw": false -> not drawn (the background already shows it)
 } MapQuad;
 
 typedef struct ArenaMap {

@@ -11,27 +11,22 @@
         {
           "id": "main_floor",
           "collidable": true,
-          "points": [[300, 700], [1300, 700], [1300, 760], [300, 760]]
+          "points": [[0, 700], [1600, 700], [1600, 760], [0, 760]]
         },
         {
-          "id": "left_block",
-          "collidable": true,
-          "points": [[220, 520], [360, 520], [360, 760], [220, 760]]
+          "id": "left_platform",
+          "platform": true,
+          "points": [[180, 520], [640, 520], [640, 542], [180, 542]]
         },
         {
-          "id": "right_block",
-          "collidable": true,
-          "points": [[1240, 520], [1380, 520], [1380, 760], [1240, 760]]
+          "id": "right_platform",
+          "platform": true,
+          "points": [[960, 520], [1420, 520], [1420, 542], [960, 542]]
         },
         {
-          "id": "top_visual_quad",
-          "collidable": false,
-          "points": [[650, 230], [950, 230], [950, 290], [650, 290]]
-        },
-        {
-          "id": "center_visual_quad",
-          "collidable": false,
-          "points": [[675, 500], [925, 500], [925, 540], [675, 540]]
+          "id": "top_platform",
+          "platform": true,
+          "points": [[560, 320], [1040, 320], [1040, 342], [560, 342]]
         }
       ]
     },
@@ -42,9 +37,24 @@
       "spawnpoints": [[600, 650], [1000, 650]],
       "quads": [
         {
-          "id": "unused_floor",
+          "id": "main_floor",
           "collidable": true,
-          "points": [[400, 700], [1200, 700], [1200, 760], [400, 760]]
+          "points": [[0, 700], [1600, 700], [1600, 760], [0, 760]]
+        },
+        {
+          "id": "left_platform",
+          "platform": true,
+          "points": [[180, 520], [640, 520], [640, 542], [180, 542]]
+        },
+        {
+          "id": "right_platform",
+          "platform": true,
+          "points": [[960, 520], [1420, 520], [1420, 542], [960, 542]]
+        },
+        {
+          "id": "top_platform",
+          "platform": true,
+          "points": [[560, 320], [1040, 320], [1040, 342], [560, 342]]
         }
       ]
     },
@@ -58,27 +68,62 @@
         {
           "id": "main_stage",
           "collidable": true,
-          "points": [[255, 710], [1345, 710], [1345, 790], [255, 790]]
+          "points": [[0, 710], [1600, 710], [1600, 790], [0, 790]]
         },
         {
-          "id": "left_booth",
+          "id": "left_platform",
+          "platform": true,
+          "points": [[180, 530], [640, 530], [640, 552], [180, 552]]
+        },
+        {
+          "id": "right_platform",
+          "platform": true,
+          "points": [[960, 530], [1420, 530], [1420, 552], [960, 552]]
+        },
+        {
+          "id": "top_platform",
+          "platform": true,
+          "points": [[560, 330], [1040, 330], [1040, 352], [560, 352]]
+        }
+      ]
+    },
+    {
+      "name": "CIELO APERTO",
+      "background": "assets/maps/cielo-aperto.png",
+      "width": 2400,
+      "height": 1350,
+      "spawnpoints": [[800, 1160], [1400, 1160]],
+      "quads": [
+        {
+          "id": "main_floor",
           "collidable": true,
-          "points": [[0, 625], [290, 625], [290, 730], [0, 730]]
+          "points": [[339, 1230], [1842, 1230], [1842, 1300], [339, 1300]]
         },
         {
-          "id": "right_booth",
+          "id": "left_cliff_top",
           "collidable": true,
-          "points": [[1310, 625], [1600, 625], [1600, 730], [1310, 730]]
+          "points": [[0, 530], [199, 530], [199, 820], [0, 820]]
         },
         {
-          "id": "left_balcony",
-          "collidable": false,
-          "points": [[250, 350], [610, 350], [610, 385], [250, 385]]
+          "id": "left_cliff_bottom",
+          "collidable": true,
+          "points": [[0, 820], [150, 820], [150, 1170], [0, 1170]]
         },
         {
-          "id": "right_balcony",
-          "collidable": false,
-          "points": [[990, 350], [1350, 350], [1350, 385], [990, 385]]
+          "id": "right_island_top",
+          "collidable": true,
+          "points": [[1916, 265], [2295, 265], [2295, 520], [1916, 520]]
+        },
+        {
+          "id": "right_island_bottom",
+          "collidable": true,
+          "points": [[1990, 520], [2200, 520], [2200, 720], [1990, 720]]
+        },
+        {
+          "id": "middle_platform",
+          "platform": true,
+          "draw": false,
+          "points": [[490, 734], [1691, 734], [1691, 756], [490, 756]]
         }
       ]
     }
